@@ -10,6 +10,8 @@ This script:
 
 import json
 import os
+from pathlib import Path
+import argparse
 
 from datasets import Dataset, DatasetDict
 
@@ -56,7 +58,12 @@ def convert_to_dataset(samples):
 
 
 def main():
-    base_dir = r"h:\数据科学与大数据技术\大数据软件与应用\project2"
+    root = Path(__file__).resolve().parent
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input-dir", type=Path, default=root / "runs" / "selection")
+    parser.add_argument("--output-dir", type=Path, default=root / "runs" / "prepared")
+    args = parser.parse_args()
+    base_dir = args.input_dir
 
     # Load selected data
     print("[1/3] Loading selected data...")
@@ -86,17 +93,9 @@ def main():
         "validation": val_dataset,
     })
 
-    output_dir = os.path.join(base_dir, "datamind_selected")
+    output_dir = args.output_dir
     dataset_dict.save_to_disk(output_dir)
     print(f"  Saved to: {output_dir}")
-
-    # Also save as separate train/val directories for more flexibility
-    train_dir = os.path.join(base_dir, "datamind_train")
-    val_dir = os.path.join(base_dir, "datamind_val")
-    train_dataset.save_to_disk(train_dir)
-    val_dataset.save_to_disk(val_dir)
-    print(f"  Train only saved to: {train_dir}")
-    print(f"  Val   only saved to: {val_dir}")
 
     # Quick sanity check: load back and verify
     print("\n[Sanity Check] Reloading datasets...")

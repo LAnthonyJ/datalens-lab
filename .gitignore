@@ -1,0 +1,17 @@
+.venv*/
+__pycache__/
+runs/
+.uv-cache/
+*.pyc
+/qwen_model/
+/ray results/
+/ray_results/
+/model.pt
+/datamind_12k.json
+/datamind_selected/
+/datamind_train/
+/datamind_val/
+/tokenized_train/
+/train_2k*.json*
+/val_500*.json*
+/selection_meta.json

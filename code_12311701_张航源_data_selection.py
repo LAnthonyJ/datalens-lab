@@ -22,6 +22,12 @@ np.random.seed(42)
 
 # ─── Load Data ───────────────────────────────────────────────────────────────
 
+import argparse
+import hashlib
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+
 def load_data(filepath):
     with open(filepath, 'r', encoding='utf-8') as f:
         data = json.load(f)
@@ -205,25 +211,15 @@ def deita_selection(samples, scores, embeddings, budget, diversity_threshold=0.8
     order = np.argsort(scores)[::-1]  # descending score
 
     selected_indices = []
-    selected_embeddings = []
-
+    eligible = np.ones(n, dtype=bool)
+    columns = embeddings.T.tocsr()
     for idx in order:
-        if len(selected_indices) == 0:
+        if eligible[idx]:
             selected_indices.append(idx)
-            selected_embeddings.append(embeddings[idx].toarray().flatten())
-            continue
-
-        # Compute max cosine similarity to already selected set
-        emb = embeddings[idx].toarray().flatten()
-        sims = cosine_similarity([emb], selected_embeddings)[0]
-        max_sim = np.max(sims)
-
-        if max_sim < diversity_threshold:
-            selected_indices.append(idx)
-            selected_embeddings.append(emb)
-
-        if len(selected_indices) >= budget:
-            break
+            if len(selected_indices) >= budget:
+                break
+            similar = embeddings[idx] @ columns
+            eligible[similar.indices[similar.data >= diversity_threshold]] = False
 
     return selected_indices
 
@@ -262,7 +258,7 @@ def kmeans_cluster_selection(samples, scores, embeddings, budget, n_clusters=50)
 
 # ─── Main Pipeline ───────────────────────────────────────────────────────────
 
-def run_selection_pipeline(data_path, train_budget=2000, val_budget=500):
+def run_selection_pipeline(data_path, train_budget=2000, val_budget=500, output_dir=ROOT / "runs" / "selection"):
     """
     Full data selection pipeline:
       1. Load data
@@ -313,10 +309,19 @@ def run_selection_pipeline(data_path, train_budget=2000, val_budget=500):
 
     # Apply filter
     filtered_indices = [i for i, keep in enumerate(quality_mask) if keep]
+    seen = set()
+    unique = []
+    for i in filtered_indices:
+        messages = [(m["role"], " ".join(m["content"].split())) for m in data[i]["messages"]]
+        digest = hashlib.sha256(json.dumps(messages, ensure_ascii=False).encode()).digest()
+        if digest not in seen:
+            unique.append(i)
+            seen.add(digest)
+    filtered_indices = unique
     filtered_data = [data[i] for i in filtered_indices]
     filtered_complexity = complexity_scores[quality_mask]
     filtered_quality = quality_scores[quality_mask]
-    filtered_combined = combined_scores[quality_mask]
+    filtered_combined = combined_scores[filtered_indices]
 
     # 4. Compute embeddings for filtered data
     print("\n[Step 4] Computing TF-IDF embeddings for diversity selection...")
@@ -344,11 +349,12 @@ def run_selection_pipeline(data_path, train_budget=2000, val_budget=500):
     # 6. Select validation set from remaining samples (stratified by level)
     print(f"\n[Step 6] Selecting {val_budget} validation samples (stratified by level)...")
     train_set = set(train_global_indices)
+    train_ids = {s['id'] for s in train_selected if s.get('id')}
 
     # Build remaining list with global index tracking
     remaining_entries = []  # (local_idx, global_idx, data_item, combined_score)
     for local_i, global_i in enumerate(filtered_indices):
-        if global_i not in train_set:
+        if global_i not in train_set and data[global_i].get('id') not in train_ids:
             remaining_entries.append({
                 'local': local_i,
                 'global': global_i,
@@ -362,25 +368,15 @@ def run_selection_pipeline(data_path, train_budget=2000, val_budget=500):
         lvl = entry['data'].get('level', 'N/A')
         level_to_entries.setdefault(lvl, []).append(entry)
 
-    # Compute proportional allocation
     total_remaining = len(remaining_entries)
-    for lvl in level_to_entries:
-        alloc = max(1, int(val_budget * len(level_to_entries[lvl]) / total_remaining))
-        level_to_entries[lvl] = {
-            'entries': level_to_entries[lvl],
-            'alloc': alloc,
-        }
-
-    # Adjust allocations to hit exact budget
-    total_alloc = sum(v['alloc'] for v in level_to_entries.values())
-    sorted_levels = sorted(level_to_entries.keys(),
-                           key=lambda l: len(level_to_entries[l]['entries']),
-                           reverse=True)
-    j = 0
-    while total_alloc < val_budget:
-        level_to_entries[sorted_levels[j % len(sorted_levels)]]['alloc'] += 1
-        total_alloc += 1
-        j += 1
+    if total_remaining < val_budget or len(train_selected) != train_budget:
+        raise ValueError("Insufficient distinct samples for the requested split sizes")
+    for level, entries in level_to_entries.items():
+        quota = val_budget * len(entries) / total_remaining
+        level_to_entries[level] = {"entries": entries, "alloc": int(quota), "fraction": quota % 1}
+    left = val_budget - sum(info["alloc"] for info in level_to_entries.values())
+    for info in sorted(level_to_entries.values(), key=lambda item: -item["fraction"])[:left]:
+        info["alloc"] += 1
 
     # Select top-scoring samples from each level
     val_global_indices = []
@@ -403,9 +399,10 @@ def run_selection_pipeline(data_path, train_budget=2000, val_budget=500):
     # 7. Save results
     print("\n[Step 7] Saving selected data...")
 
-    train_path = r'h:\数据科学与大数据技术\大数据软件与应用\project2\train_2k.json'
-    val_path   = r'h:\数据科学与大数据技术\大数据软件与应用\project2\val_500.json'
-
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    train_path = output_dir / "train_2k.json"
+    val_path = output_dir / "val_500.json"
     with open(train_path, 'w', encoding='utf-8') as f:
         json.dump(train_selected, f, ensure_ascii=False, indent=2)
     print(f"  Training data saved to: {train_path}")
@@ -423,7 +420,7 @@ def run_selection_pipeline(data_path, train_budget=2000, val_budget=500):
         'complexity_mean': float(complexity_scores.mean()),
         'quality_mean': float(quality_scores.mean()),
     }
-    meta_path = r'h:\数据科学与大数据技术\大数据软件与应用\project2\selection_meta.json'
+    meta_path = output_dir / "selection_meta.json"
     with open(meta_path, 'w', encoding='utf-8') as f:
         json.dump(meta, f, ensure_ascii=False, indent=2)
     print(f"  Metadata saved to: {meta_path}")
@@ -433,6 +430,8 @@ def run_selection_pipeline(data_path, train_budget=2000, val_budget=500):
 # ─── Entry Point ──────────────────────────────────────────────────────────────
 
 if __name__ == '__main__':
-    data_path = r'h:\数据科学与大数据技术\大数据软件与应用\project2\datamind_12k.json'
-    train_data, val_data = run_selection_pipeline(data_path, train_budget=2000, val_budget=500)
-    print("\n[Done] Data selection complete.")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", type=Path, default=ROOT / "datamind_12k.json")
+    parser.add_argument("--output-dir", type=Path, default=ROOT / "runs" / "selection")
+    args = parser.parse_args()
+    run_selection_pipeline(args.input, output_dir=args.output_dir)
