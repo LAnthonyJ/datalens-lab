@@ -10,7 +10,9 @@ How do you choose 2,000 conversations to teach a small language model about data
 
 > Explain the difference between L1 and L2 regularization with examples.
 
-Page 9 of the report captures the assistant answering this prompt. Other example prompts ask for a SQL query to rank customers by total purchases and Python code to plot a correlation matrix. [View the recorded Gradio session](docs/media/gradio-session.png)
+![The Gradio demo showing a user's question about L1 and L2 regularization and the fine-tuned model's response.](docs/media/gradio-session.png)
+
+*Gradio session captured on page 9 of the [experiment report](12311701_张航源.pdf).* Other example prompts ask for a SQL query to rank customers by total purchases and Python code to plot a correlation matrix.
 
 ## Choosing the training data
 
