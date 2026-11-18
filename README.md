@@ -1,52 +1,61 @@
-[![DataLens Lab · 面向数据分析的语言模型实验，右侧为项目实际 Gradio 界面](docs/media/datalens-cover.png)](12311701_张航源.mp4)
+[![DataLens Lab. A glass lens brings scattered data points into focus. Watch the project walkthrough.](docs/media/datalens-lens.png)](12311701_张航源.mp4)
 
 # DataLens Lab
 
-**用 2,000 条精选对话，训练一个能聊 SQL、Python 和统计学的数据分析助手。** 本项目记录了从 DataMind-12K 筛选对话、用 Ray Train 微调 Qwen3.5-0.8B，到在 Gradio 里检验回答的完整实验。
+How do you choose 2,000 conversations to teach a small language model about data analysis? This experiment starts with 11,707 conversations from DataMind-12K, fine-tunes Qwen3.5-0.8B with Ray Train, and puts the resulting assistant in a Gradio chat interface for questions about SQL, Python, and statistics.
 
-[观看项目讲解 · 8 分 53 秒](12311701_张航源.mp4)　·　[阅读实验报告](12311701_张航源.pdf)　·　[打开训练 Notebook](code_12311701_张航源_raytrain.ipynb)
+[Watch the walkthrough · 8 min 53 sec](12311701_张航源.mp4) · [Read the experiment report](12311701_张航源.pdf) · [Explore the training notebook](code_12311701_张航源_raytrain.ipynb)
 
-## 一次真实对话
+## Inside the demo
 
-“Explain the difference between L1 and L2 regularization with examples.” 在这次演示中，用户请模型举例说明两种正则化方法。点击封面可以观看项目讲解，也可以放大查看报告第 9 页记录的[完整对话界面](docs/media/gradio-session.png)。演示还提供了按消费总额查询前十名客户、用 Python 绘制相关性热力图等问题入口。
+> Explain the difference between L1 and L2 regularization with examples.
 
-## 从 11,707 条对话里选什么
+Page 9 of the report captures the assistant answering this prompt. Other example prompts ask for a SQL query to rank customers by total purchases and Python code to plot a correlation matrix. [View the recorded Gradio session](docs/media/gradio-session.png)
 
-![DataMind 原始对话共 11,707 条，选出 2,000 条用于训练，另取 500 条用于验证](docs/media/selection.png)
+## Choosing the training data
 
-筛选脚本先从难度、轮数和代码块等特征估算复杂度，再用质量分的第 15 百分位设置门槛。候选样本按综合得分排序后，脚本用 TF-IDF 余弦相似度控制重复内容。验证集按难度分层抽取。完整规则见[数据筛选脚本](code_12311701_张航源_data_selection.py)。
+```mermaid
+flowchart LR
+    A["11,707 source conversations"] --> B["Score quality and complexity"]
+    B --> C["Select for diversity"]
+    C --> D["2,000 training conversations"]
+    A --> E["Sample by difficulty"]
+    E --> F["500 validation conversations"]
+```
 
-| 报告中的筛选指标 | 原始数据 | 训练集 | 验证集 |
+The selection script estimates complexity from signals such as difficulty, turn count, and code blocks. It uses the 15th percentile of quality scores as a cutoff, ranks candidates by their combined score, and compares TF-IDF vectors using cosine similarity to limit repetition. The validation set is sampled by difficulty level. [Read the selection code](code_12311701_张航源_data_selection.py)
+
+| Selection metric | Source dataset | Training set | Validation set |
 | --- | ---: | ---: | ---: |
-| 平均复杂度评分 | 0.35 | 0.52 | 0.48 |
-| 平均质量评分 | 0.65 | 0.78 | 0.73 |
+| Mean complexity score | 0.35 | 0.52 | 0.48 |
+| Mean quality score | 0.65 | 0.78 | 0.73 |
 
-## 微调过程中解决了什么
+## What changed during fine-tuning
 
-训练初期，预处理没有正确识别 Qwen3.5 模板中的助手回复边界，导致部分样本缺少有效训练目标。修正后的流程用字符偏移定位助手文本对应的 token，让损失函数只计算模型需要学习的回复。报告记录的最终运行共 **125 步**，有效批量为 **16**，最终**训练损失为 0.098**。
+Early runs missed the start of some assistant replies in the Qwen3.5 chat template. Those examples had no target tokens for the model to learn from. The revised preprocessing uses character offsets to locate each reply and computes loss only on its tokens. The final run took **125 steps** at an effective batch size of **16**, with a final training loss of **0.098**.
 
-| 顺序 | 可以查看什么 |
+| Experiment stage | Source |
 | --- | --- |
-| 1 · 准备数据 | [转换对话格式](code_12311701_张航源_prepare_qwen_data.py) |
-| 2 · 微调模型 | [Ray Train Notebook](code_12311701_张航源_raytrain.ipynb) |
-| 3 · 检查回答 | [推理脚本](test_inference.py) · [Gradio 对话入口](demo.py) |
+| Format the conversations | [Data preparation script](code_12311701_张航源_prepare_qwen_data.py) |
+| Train the model | [Ray Train notebook](code_12311701_张航源_raytrain.ipynb) |
+| Inspect responses | [Inference script](test_inference.py) · [Gradio app](demo.py) |
 
 <details>
-<summary><strong>在本机启动 Gradio</strong></summary>
+<summary><strong>Run the Gradio demo locally</strong></summary>
 
-公开仓库提供源码和实验记录。运行微调版演示需要自行准备训练检查点，将含有 model.pt 和 tokenizer 文件的 checkpoint_* 目录放在项目下的 `ray results/qwen-datamind-full/`。脚本会选择按名称排序后的最新检查点，首次运行还需从 ModelScope 获取基础模型。
+Bring a fine-tuned checkpoint containing `model.pt` and its tokenizer files. Place the `checkpoint_*` directory under `ray results/qwen-datamind-full/` in the project root. The app loads the last checkpoint in filename order and can download the base model from ModelScope on first use.
 
 ```bash
 python -m pip install torch transformers gradio modelscope
 python demo.py
 ```
 
-启动后打开 `http://127.0.0.1:7860`。如需从头训练，还需准备 DataMind-12K 数据并按本机环境调整脚本和 Notebook 中的数据路径。
+Open `http://127.0.0.1:7860`. To train from scratch, supply the DataMind-12K dataset and update the paths in the scripts and notebook for your environment.
 
 </details>
 
-## 从实验到产品构想
+## From experiment to product proposal
 
-课程的第二部分将助手扩展为 **DataLens AI** 企业数据分析产品提案。架构文档讨论十万级并发的设计目标，路演材料说明业务场景与商业模式。上述规模属于方案目标，实测训练结果见实验报告。
+The second part of the project explores **DataLens AI**, a proposed analytics assistant for business teams. Its architecture targets 100,000 concurrent users as a design goal. The experiment report documents the fine-tuning results, while the pitch deck covers use cases and the business model.
 
-[系统架构图与设计](Q2_architecture.md)　·　[商业计划书](Q2_business_plan.md)　·　[路演幻灯片](12311701_张航源DataLens%20AI%20路演PPT.pptx)
+[Architecture](Q2_architecture.md) · [Business plan](Q2_business_plan.md) · [Pitch deck](12311701_张航源DataLens%20AI%20路演PPT.pptx)
