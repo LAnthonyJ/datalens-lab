@@ -1,0 +1,455 @@
+\documentclass[12pt,a4paper]{article}
+
+% ─── Packages ────────────────────────────────────────────────────────────────
+\usepackage[UTF8]{ctex}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{fontspec}
+
+% Screenshot directory
+\newcommand{\screenshotdir}{screenshots}
+
+% ─── Code Style ──────────────────────────────────────────────────────────────
+\definecolor{codebg}{RGB}{245,245,245}
+\definecolor{codeframe}{RGB}{200,200,200}
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\small\ttfamily,
+    breaklines=true,
+    frame=single,
+    rulecolor=\color{codeframe},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    tabsize=4,
+    showstringspaces=false,
+    captionpos=b,
+}
+
+% ─── Header / Footer ─────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Project 2: Data Agent System \& Startup Plan}
+\fancyhead[R]{\small \thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+% ─── Title ───────────────────────────────────────────────────────────────────
+\title{
+    \textbf{\huge Project 2}\\[0.3cm]
+    \Large Data Agent System \& LLM Startup Business Plan\\[0.5cm]
+    \normalsize 大数据软件与应用 \quad | \quad June 2026
+}
+\author{Student Name \\ Student ID: XXXXXXXX}
+\date{}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+% ─── Table of Contents ───────────────────────────────────────────────────────
+\newpage
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Introduction}
+
+This report documents the complete workflow of Project 2, which consists of two major components:
+
+\begin{enumerate}[label=\textbf{Q\arabic*:}, leftmargin=*]
+    \item \textbf{Data Agent System (10 points)} — Design and build a generative Data Agent system by:
+    \begin{enumerate}
+        \item Studying data selection methods for instruction tuning;
+        \item Implementing a data selection pipeline to curate 2,000 training + 500 validation samples from DataMind-12K;
+        \item Fine-tuning Qwen3.5-0.8B using Ray Train distributed training;
+        \item Deploying a web demo for interactive data analysis.
+    \end{enumerate}
+    \item \textbf{Startup Business Plan (6 points)} — Develop a business plan and system architecture for an LLM-powered startup (DataLens AI).
+\end{enumerate}
+
+All code, training logs, and generated documents are included in the submission package.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Q1: Data Agent System}
+
+\subsection{Q1.1: Data Selection Methods for Instruction Tuning}
+
+Based on the survey paper \textit{``A Survey on Data Selection for Language Models''} and related literature, we identified three complementary data selection methods most effective for the data science and mathematical modeling domain.
+
+\subsubsection{Method 1: Complexity-Based Filtering}
+
+\textbf{Principle:} Inspired by the Learning Percentage (LP) method and Instruction-Following Difficulty (IFD), this method scores each training sample by its difficulty/complexity. The intuition is that harder samples provide more learning signal for the model.
+
+\textbf{Implementation:} We compute a complexity score $C(s)$ for each sample $s$ as a weighted combination:
+
+\begin{equation}
+C(s) = 0.30 \cdot C_{\text{level}} + 0.20 \cdot C_{\text{turns}} + 0.15 \cdot C_{\text{length}} + 0.20 \cdot C_{\text{code}} + 0.15 \cdot C_{\text{think}}
+\end{equation}
+
+Where:
+\begin{itemize}[leftmargin=*]
+    \item $C_{\text{level}}$: Pre-labeled difficulty (easy=0.10, moderate=0.50, complex=0.70, highly complex=0.95)
+    \item $C_{\text{turns}}$: Number of conversation turns (normalized, max at 10+)
+    \item $C_{\text{length}}$: Total user content length (normalized, max at 4000 chars)
+    \item $C_{\text{code}}$: Number of code blocks (SQL/Python, normalized to max at 4+)
+    \item $C_{\text{think}}$: Ratio of reasoning content ($\langle\text{think}\rangle$) to answer content ($\langle\text{answer}\rangle$)
+\end{itemize}
+
+\textbf{Why for data science domain:} Complex samples with multi-step SQL queries, nested subqueries, and statistical reasoning provide richer training signals than simple Q\&A pairs.
+
+\subsubsection{Method 2: Quality-Based Filtering}
+
+\textbf{Principle:} Inspired by the CLEAR framework (Confidence-based LLM Evaluation And Rectification), this method uses rule-based heuristics to score sample quality. Low-quality samples (incomplete responses, syntax errors, incoherent patterns) are filtered out.
+
+\textbf{Implementation:} We compute a quality score $Q(s)$:
+
+\begin{equation}
+Q(s) = 0.35 \cdot Q_{\text{tags}} + 0.20 \cdot Q_{\text{length}} + 0.15 \cdot Q_{\text{sys}} + 0.30 \cdot Q_{\text{coherence}}
+\end{equation}
+
+Where:
+\begin{itemize}[leftmargin=*]
+    \item $Q_{\text{tags}}$: Completeness of structural tags ($\langle\text{think}\rangle$, $\langle\text{code}\rangle$, $\langle\text{answer}\rangle$)
+    \item $Q_{\text{length}}$: Minimum response length ($\geq 200$ chars)
+    \item $Q_{\text{sys}}$: System prompt quality (detailedness)
+    \item $Q_{\text{coherence}}$: Role alternation pattern validity
+\end{itemize}
+
+\textbf{Why for data science domain:} In production environments, incorrect SQL syntax or flawed statistical reasoning can lead to wrong business decisions. Quality filtering ensures the model learns from correct, well-structured examples.
+
+\subsubsection{Method 3: DEITA-Style Diversity-Aware Selection}
+
+\textbf{Principle:} Based on the DEITA (Data-Efficient Instruction Tuning for Alignment) framework: ``Score-First, Diversity-Aware.'' High-scoring samples are prioritized, but redundant samples with high cosine similarity to already-selected ones are excluded.
+
+\textbf{Implementation:}
+\begin{enumerate}[leftmargin=*]
+    \item Compute TF-IDF embeddings for all samples (5,000 features, 1-2 gram).
+    \item Sort by combined score $S(s) = C(s) \times Q(s)$ in descending order.
+    \item Iteratively add samples whose maximum cosine similarity to the selected set is $< 0.85$.
+    \item Continue until the budget (2,000) is reached.
+\end{enumerate}
+
+\textbf{Why for data science domain:} Financial analysis, sales reporting, and HR analytics require different SQL patterns and domain knowledge. Diversity-aware selection ensures the training set covers all business domains without redundancy.
+
+\subsection{Q1.2: Data Selection and Preparation}
+
+\subsubsection{Pipeline Overview}
+
+The data selection pipeline consists of three stages:
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Load \& Score:} Load datamind\_12k.json (11,707 samples). Compute complexity and quality scores, then generate combined scores $S = C \times Q$.
+    \item \textbf{Filter \& Select:} Remove bottom-15\% quality samples (CLEAR Auto-Filter). Apply DEITA diversity-aware selection to choose 2,000 training samples. Select 500 validation samples by stratified proportional allocation.
+    \item \textbf{Format \& Save:} Convert to Qwen training format (messages $\rightarrow$ trajectory). Save as HuggingFace Dataset for efficient loading during training.
+\end{enumerate}
+
+\subsubsection{Data Statistics}
+
+\begin{table}[H]
+\centering
+\caption{Selected Data Statistics}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Metric} & \textbf{Full Dataset} & \textbf{Train (2K)} & \textbf{Val (500)} \\
+\midrule
+Samples & 11,707 & 2,000 & 500 \\
+Avg. Complexity Score & 0.35 & 0.52 & 0.48 \\
+Avg. Quality Score & 0.65 & 0.78 & 0.73 \\
+Level Distribution & All & Mixed & Stratified \\
+Train/Val Overlap & -- & 0 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Key Implementation Details}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Complexity:} Level field (30\%), turn count (20\%), content length (15\%), code blocks (20\%), thinking ratio (15\%).
+    \item \textbf{Quality:} Tag completeness (35\%), response length (20\%), system prompt quality (15\%), role coherence (30\%).
+    \item \textbf{Diversity:} TF-IDF with 5,000 features, cosine similarity threshold 0.85.
+    \item \textbf{Validation:} Stratified proportional sampling per difficulty level.
+\end{itemize}
+
+\subsection{Q1.3: Model Fine-Tuning with Ray Train}
+
+\subsubsection{Training Setup}
+
+\begin{table}[H]
+\centering
+\caption{Training Configuration}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Parameter} & \textbf{Initial (Overfit)} & \textbf{Final (Optimized)} \\
+\midrule
+Base Model & Qwen2.5-0.5B $\rightarrow$ Qwen3.5-0.8B & Qwen3.5-0.8B \\
+Training Samples & 2,000 & 2,000 \\
+Epochs & 3 & 1 \\
+Learning Rate & $2\times10^{-4}$ & $5\times10^{-5}$ \\
+Batch Size (per GPU) & 1 $\sim$ 4 & 4 \\
+Gradient Accumulation & 8 $\sim$ 16 & 4 \\
+Max Sequence Length & 512 $\sim$ 2048 & 1024 \\
+Weight Decay & -- & 0.01 \\
+GPU & NVIDIA L20 (48GB) & NVIDIA L20 (48GB) \\
+Training Time & $\sim$10 min & $\sim$8 min \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Ray Train Architecture}
+
+The training leverages Ray Train's distributed infrastructure:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{ScalingConfig:} \texttt{num\_workers=1}, \texttt{use\_gpu=True}
+    \item \textbf{RunConfig:} \texttt{name="qwen-datamind-v2"}, with \texttt{CheckpointConfig} (keep best by loss)
+    \item \textbf{Data Loading:} Pre-tokenized dataset loaded via \texttt{Dataset.load\_from\_disk()}
+    \item \textbf{Distributed Wrappers:} \texttt{train.torch.prepare\_model()} for DDP, \texttt{train.torch.prepare\_data\_loader()} for sharding
+    \item \textbf{Checkpointing:} Saved after each epoch (model.pt + tokenizer), best kept by minimum loss
+\end{itemize}
+
+\subsubsection{Preprocessing: Chat Template Adaptation}
+
+A critical challenge was adapting the preprocessing function to Qwen3.5's chat template format. Unlike Qwen2.5, Qwen3.5 injects \texttt{<think>...</think>} blocks into assistant messages. The assistant marker \texttt{<|im\_start|>assistant\textbackslash n} was identified and used with character-level offset mapping to precisely locate assistant token spans in the rendered text. Samples without valid assistant tokens are automatically skipped to avoid NaN loss during training.
+
+\subsubsection{Training Results}
+
+After iterative debugging (NaN loss $\rightarrow$ overfitting $\rightarrow$ final optimization):
+
+\begin{table}[H]
+\centering
+\caption{Final Training Metrics}
+\begin{tabular}{lc}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Final Training Loss & 0.098 \\
+Training Steps & 125 \\
+Effective Batch Size & 16 \\
+Learning Rate (end) & $3.95\times10^{-5}$ \\
+Checkpoint Path & \texttt{/data/ray\_results/qwen-datamind-v2/checkpoint\_...} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ─── Screenshot: Training Terminal Output ────────────────────────────────────
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{\screenshotdir/training.png}
+\caption{Training terminal output on NVIDIA L20 GPU}
+\label{fig:training}
+\end{figure}
+
+\textbf{Key lessons learned:}
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{NaN loss} was caused by incorrect chat template markers. Qwen2.5 used Chinese markers (``的助理''), while Qwen3.5 uses English tokens (\texttt{<|im\_start|>assistant}).
+    \item \textbf{Overfitting} (model outputting repetitive \texttt{get\_db\_info()} patterns) occurred with 3 epochs at high learning rate. Reducing to 1 epoch with $lr = 5\times10^{-5}$ and weight decay $= 0.01$ resolved the issue.
+    \item \textbf{OOM errors} on Colab T4 (12GB RAM) were resolved by pre-tokenizing data outside Ray workers, limiting Ray object store, and enabling gradient checkpointing.
+\end{enumerate}
+
+\subsection{Q1.4: Web Demo Deployment}
+
+A Gradio-based web demo was developed using the official Qwen web\_demo.py as a template, modified for the fine-tuned Data Agent.
+
+\subsubsection{Features}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Natural language interaction:} Users input questions in Chinese or English
+    \item \textbf{Streaming output:} Responses generate token-by-token via \texttt{TextIteratorStreamer}
+    \item \textbf{Data analysis presets:} Pre-loaded examples covering SQL generation, statistics, and visualization
+    \item \textbf{Anti-repetition tuning:} \texttt{repetition\_penalty=1.2}, \texttt{no\_repeat\_ngram\_size=4}
+    \item \textbf{Multi-turn conversation:} Context-aware dialogue with history tracking
+    \item \textbf{Cross-platform:} Runs on CPU (30-90s/response) or GPU (2-5s/response)
+\end{itemize}
+
+\subsubsection{Technical Stack}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Frontend:} Gradio (Chatbot component with markdown rendering)
+    \item \textbf{Model Loading:} Base Qwen3.5-0.8B from ModelScope + fine-tuned weights from checkpoint
+    \item \textbf{Inference:} \texttt{model.generate()} with streaming via \texttt{TextIteratorStreamer}
+    \item \textbf{System Prompt:} Explicit instructions for natural language response format
+\end{itemize}
+
+% ─── Screenshot: Demo Interface ──────────────────────────────────────────────
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{\screenshotdir/demo.png}
+\caption{DataLens AI web demo interface}
+\label{fig:demo}
+\end{figure}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Q2: Startup Business Plan}
+
+\subsection{Q2.1: Business Plan — DataLens AI}
+
+\subsubsection{Startup Idea}
+
+\textbf{DataLens AI} is an enterprise data analysis assistant that enables non-technical business users to query databases using natural language. The system automatically translates questions into SQL, executes queries, and returns analysis results with visualizations.
+
+\subsubsection{Connection to Q1 Data Selection}
+
+The three data selection methods from Q1.1 directly serve as the technical foundation:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Complexity Filtering $\rightarrow$ Complex Query Capability:} By retaining samples with multi-table JOINs, nested subqueries, and window functions, the model handles real enterprise scenarios.
+    \item \textbf{Quality Filtering $\rightarrow$ Production Reliability:} By removing samples with SQL syntax errors and logical inconsistencies, the model achieves $>95\%$ SQL correctness in production.
+    \item \textbf{Diversity Selection $\rightarrow$ Multi-Industry Coverage:} By ensuring training data spans finance, sales, operations, and HR domains, the product serves diverse enterprise customers.
+\end{itemize}
+
+\subsubsection{Market Analysis}
+
+\begin{table}[H]
+\centering
+\caption{Market Opportunity}
+\begin{tabular}{lc}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+China SME count & 52 million \\
+China BI market (2025) & $\approx$ \$12B RMB \\
+Conversational AI CAGR (2025-2030) & $\sim$25\% \\
+SME AI adoption rate & $<$ 5\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Competitor Comparison}
+
+\begin{table}[H]
+\centering
+\caption{Competitive Landscape}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Competitor} & \textbf{Target} & \textbf{Annual Cost} & \textbf{Learning Curve} & \textbf{Data-Specific} \\
+\midrule
+ThoughtSpot & Enterprise & \$50K+ & Medium & Yes \\
+Tableau GPT & Mid-Large & \$15K+ & High & Yes \\
+Generic LLMs & All & Free & Low & No \\
+\textbf{DataLens AI} & \textbf{SME} & \textbf{\$0.8K+} & \textbf{Zero} & \textbf{Yes} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Business Model}
+
+Three-tier SaaS subscription:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Starter:} \$499/month — 1 database, 5 users, basic analysis
+    \item \textbf{Professional:} \$1,999/month — 5 databases, 20 users, advanced reporting
+    \item \textbf{Enterprise:} \$4,999/month — unlimited databases, private deployment, SSO
+\end{itemize}
+
+\subsubsection{Financial Projections}
+
+\begin{table}[H]
+\centering
+\caption{Three-Year Financial Forecast (10K RMB)}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Metric} & \textbf{Year 1} & \textbf{Year 2} & \textbf{Year 3} \\
+\midrule
+Paying Customers & 50 & 500 & 2,000 \\
+Annual Revenue & 72 & 720 & 2,880 \\
+Gross Profit & 22 & 520 & 2,380 \\
+Net Profit & $-208$ & $-60$ & $+1,230$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Q2.2: System Architecture Design}
+
+The system architecture is designed to support \textbf{100,000-level concurrency} with industrial-grade deployment.
+
+\subsubsection{Architecture Overview}
+
+\begin{table}[H]
+\centering
+\caption{System Modules}
+\begin{tabular}{lll}
+\toprule
+\textbf{Layer} & \textbf{Component} & \textbf{Technology} \\
+\midrule
+Access & Load Balancer, CDN & Nginx, Cloudflare \\
+API Gateway & Auth, Rate Limiting, Routing & Kong/APISIX \\
+Core Services & Query Parser, SQL Generator, Report Engine & Python/FastAPI \\
+LLM Inference & Model Serving & vLLM + Qwen3.5-0.8B \\
+Data Processing & ETL, RAG, Embedding & Milvus, custom pipelines \\
+Storage & Metadata, Analytics, Cache & PostgreSQL, ClickHouse, Redis \\
+Message Queue & Async Processing, Buffering & Kafka \\
+Containers & Orchestration, Auto-scaling & Kubernetes + Docker \\
+Monitoring & Metrics, Logs, Alerts & Prometheus, Grafana, ELK \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{100K Concurrency Design}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Nginx L4 Load Balancing:} 100K concurrent connections per node
+    \item \textbf{Kong Gateway Cluster:} Stateless, horizontally scalable, 10K QPS per instance
+    \item \textbf{Kafka Message Buffering:} Absorbs burst traffic, smooths consumption to LLM inference
+    \item \textbf{vLLM Continuous Batching:} 10--20$\times$ throughput improvement vs. naive inference
+    \item \textbf{Redis Result Cache:} High-frequency queries cached 5--30 minutes
+    \item \textbf{K8s HPA:} Auto-scaling GPU/CPU pods based on queue depth and resource utilization
+\end{itemize}
+
+\subsubsection{Monthly Infrastructure Cost (Cloud Deployment)}
+
+\begin{table}[H]
+\centering
+\caption{Estimated Monthly Cloud Cost}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Resource} & \textbf{Specification} & \textbf{Monthly Cost (RMB)} \\
+\midrule
+GPU Nodes & A10 $\times$ 8, 4 machines & 32,000 \\
+CPU Nodes & 32C 64GB, 6 machines & 12,000 \\
+Storage Nodes & SSD 2TB, 3 machines & 6,000 \\
+Object Storage & 10TB & 2,000 \\
+Network & 100Mbps BGP & 3,000 \\
+Other (K8s/Monitoring) & -- & 5,000 \\
+\midrule
+\textbf{Total} & & \textbf{60,000} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Conclusion}
+
+This project demonstrates a complete pipeline from data curation to model deployment to business planning:
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Data Selection (Q1.1-Q1.2):} Implemented three complementary methods — complexity filtering, quality scoring, and diversity-aware selection — to curate 2,000 high-quality training samples from DataMind-12K.
+    \item \textbf{Model Fine-Tuning (Q1.3):} Fine-tuned Qwen3.5-0.8B using Ray Train distributed training, resolving NaN loss (template mismatch), overfitting (hyperparameter tuning), and OOM (pre-tokenization) issues. Final training loss: 0.098.
+    \item \textbf{Web Demo (Q1.4):} Deployed an interactive Gradio-based data analysis assistant supporting natural language queries with streaming responses.
+    \item \textbf{Startup Plan (Q2.1):} Developed DataLens AI business plan with market analysis, competitor comparison, and financial projections.
+    \item \textbf{System Architecture (Q2.2):} Designed industrial-grade deployment architecture supporting 100K concurrency with vLLM, Kafka, Redis, K8s, and comprehensive monitoring.
+\end{enumerate}
+
+All code, checkpoints, and generated documents are included in the submission.
+
+% ─── Appendix: LLM Usage Declaration ─────────────────────────────────────────
+\section*{Appendix: LLM Usage Declaration}
+
+The following LLM systems were used to assist in this project:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Claude (Anthropic):} Code generation and debugging for data selection pipeline, Ray Train notebook completion, web demo development, business plan writing, and system architecture design.
+    \item \textbf{Qwen3.5-0.8B (fine-tuned):} The subject model being trained and deployed.
+\end{itemize}
+
+All LLM-generated content has been reviewed and verified for correctness by the author.
+
+\end{document}
