@@ -1,92 +1,81 @@
-[![DataLens Lab. A glass lens brings scattered data points into focus. Watch the project walkthrough.](docs/media/datalens-lens.png)](12311701_%E5%BC%A0%E8%88%AA%E6%BA%90.mp4)
-
 # DataLens Lab
 
-How do you choose 2,000 conversations to teach a small language model about data analysis? This experiment starts with 11,707 conversations from DataMind-12K, fine-tunes Qwen3.5-0.8B with Ray Train, and puts the resulting assistant in a Gradio chat interface for questions about SQL, Python, and statistics.
+[![DataLens Lab cover: a glass lens brings scattered data points into focus.](docs/media/datalens-lens.png)](#inside-the-demo)
 
-[Watch the walkthrough · 8 min 53 sec](12311701_%E5%BC%A0%E8%88%AA%E6%BA%90.mp4) · [Read the experiment report](12311701_%E5%BC%A0%E8%88%AA%E6%BA%90.pdf) · [Explore the training notebook](raytrain.ipynb)
+Can a 0.8B-parameter model write a SQL query and recognize when a question is missing the data it needs? DataLens Lab explores both tasks. The project selects 2,000 conversations from DataMind-12K, fine-tunes Qwen3.5-0.8B with Ray Train, and serves the model locally in Gradio.
+
+[Watch the walkthrough (8:53)](12311701_张航源.mp4) · [Read the experiment report](12311701_张航源.pdf) · [Open the training notebook](raytrain.ipynb) · [Run the demo](#run-the-demo-on-windows)
 
 ## Inside the demo
 
 > Explain the difference between L1 and L2 regularization with examples.
 
-![The Gradio demo showing a user's question about L1 and L2 regularization and the fine-tuned model's response.](docs/media/gradio-session.png)
+![Recorded Gradio session showing a question about L1 and L2 regularization and the model’s answer.](docs/media/gradio-session.png)
 
-*Gradio session captured on page 9 of the [experiment report](12311701_%E5%BC%A0%E8%88%AA%E6%BA%90.pdf).* Other example prompts ask for a SQL query to rank customers by total purchases and Python code to plot a correlation matrix.
+This session appears on page 9 of the [experiment report](12311701_张航源.pdf). To explore the behaviors measured below, try these two prompts:
 
-## Choosing the training data
-
-```mermaid
-flowchart LR
-    A["11,707 source conversations"] --> B["Score quality and complexity"]
-    B --> C["Select for diversity"]
-    C --> D["2,000 training conversations"]
-    A --> E["Sample by difficulty"]
-    E --> F["500 validation conversations"]
-```
-
-The selection script estimates complexity from signals such as difficulty, turn count, and code blocks. It uses the 15th percentile of quality scores as a cutoff, ranks candidates by their combined score, and compares TF-IDF vectors using cosine similarity to limit repetition. The validation set is sampled by difficulty level. [Read the selection code](data_selection.py)
-
-| Selection metric | Source dataset | Training set | Validation set |
-| --- | ---: | ---: | ---: |
-| Mean complexity score | 0.35 | 0.52 | 0.48 |
-| Mean quality score | 0.65 | 0.78 | 0.73 |
-
-## What changed during fine-tuning
-
-Early runs missed the start of some assistant replies in the Qwen3.5 chat template. Those examples had no target tokens for the model to learn from. The revised preprocessing uses character offsets to locate each reply and computes loss only on its tokens. The historical run in the project report took **125 steps** at an effective batch size of **16**, with a final training loss of **0.098**.
-
-| Experiment stage | Source |
+| Try asking | What to look for |
 | --- | --- |
-| Format the conversations | [Data preparation script](prepare_qwen_data.py) |
-| Train the model | [Ray Train notebook](raytrain.ipynb) |
-| Inspect responses | [Inference script](test_inference.py) · [Gradio app](demo.py) |
+| `Given customers(id) and orders(id, customer_id), count orders per customer, including customers with zero orders.` | Does the query keep every customer and return zero for an unmatched order? |
+| `Seven packages arrived damaged. What percentage of shipments arrived damaged?` | Does the assistant ask for the total number of shipments before calculating a percentage? |
 
-## Run the offline demo on Windows
+## What the experiments found
 
-The low-memory profile runs locally while the GPU is occupied. Install once with a 64-bit Python 3.11 environment, then start from PowerShell:
+The original training run used an effective batch size of 16 and reported a final training loss of 0.098 after 125 steps. A follow-up experiment tested answer quality directly. Starting from the same weights, full fine-tuning and LoRA each used 600 English examples. The comparison below shows **passes on fresh English prompts** held back from model selection.
 
-~~~powershell
+| Fine-tuning method | Learning rate | SQL queries | Ask for missing data | Answer when data is sufficient |
+| --- | --- | ---: | ---: | ---: |
+| Full parameters | Fixed, 5e-6 | 4/10 | **7/10** | **3/4** |
+| Full parameters | Warmup + cosine | **5/10** | 3/10 | **3/4** |
+| LoRA (rank 16) | Fixed, 5e-5 | 1/10 | 6/10 | 2/4 |
+| LoRA (rank 16) | Warmup + cosine | 1/10 | **7/10** | 2/4 |
+
+The schedule warmed up for four updates and decayed over 34, matching each method’s fixed learning rate on average. With full fine-tuning, it gained one SQL pass but lost four clarification passes. LoRA used 7.10 GiB of peak tensor memory during the scheduled run, compared with 15.81 GiB for full fine-tuning.
+
+SQL was scored by executing queries against two SQLite fixtures. Clarifications and direct answers were reviewed against predefined criteria with model names hidden. These 24 prompts and one training seed support a narrow comparison. The demo still uses its original checkpoint.
+
+## Run the demo on Windows
+
+> [!IMPORTANT]
+> The public repository contains the code, notebook, report and recorded demo. To run inference, supply a local Qwen3.5-0.8B directory containing `config.json` and a compatible DataLens checkpoint containing `model.pt`, `tokenizer.json`, `tokenizer_config.json` and `chat_template.jinja`. To explore the project without weights, start with the [walkthrough](12311701_张航源.mp4).
+
+From the repository root, install the CPU environment with **uv** and **64-bit Python 3.11**. Allow about 4 GiB of free disk space for the first launch to build the CPU weight cache.
+
+```powershell
 uv venv --python 3.11 .venv-lowmem
 uv pip install --python .venv-lowmem/Scripts/python.exe "https://download.pytorch.org/whl/cpu/torch-2.7.1%2Bcpu-cp311-cp311-win_amd64.whl" -r requirements-demo.txt
-.\run-demo.cmd --check
-.\run-demo.cmd
-~~~
+```
 
-Open the local address printed by Gradio (default port 7860). The first CPU launch writes a 2.81 GiB FP32 cache under `runs/cpu-weights/`, keyed by the source weight hash. Later runs map those files read-only. Keep approximately 4 GiB of disk space available on first launch. Activation is optional when using the launcher.
+Replace the two example paths below. The first command using `--check` loads the checkpoint and generates a response. Once it succeeds, start the chat and open the local address printed by Gradio (default `http://127.0.0.1:7860`).
 
-For a separate GPU installation, use a virtual environment named `.venv`, the same requirements and the official Windows `torch==2.7.1+cu118` wheel compatible with that interpreter. Run `.venv/Scripts/python.exe demo.py --device cuda --check` to verify generation before starting the GPU server. When the low-memory environment exists, `run-demo.cmd` selects it. Pass `--port` to choose another loopback port.
+```powershell
+$model = 'D:\models\Qwen3.5-0.8B'
+$checkpoint = 'D:\models\datalens-checkpoint'
+.\run-demo.cmd --model-dir $model --checkpoint-dir $checkpoint --check
+.\run-demo.cmd --model-dir $model --checkpoint-dir $checkpoint
+```
 
-The model assets are supplied separately. Point `--model-dir` at a local Qwen3.5-0.8B configuration and `--checkpoint-dir` at a directory containing `model.pt`, `tokenizer.json`, `tokenizer_config.json` and `chat_template.jinja`. The default lookup accepts both the original and ModelScope-escaped model folder names. The recorded demo uses `ray results/qwen-datamind-full/checkpoint_2026-05-24_06-08-05.338158` and weight SHA-256 `5aa2d82d2a51c5ebe99e796d8321565e22b5ee5de9fe4073fd0d688062748697`. The Ray snapshot identifies a different directory for the historical loss of 0.098.
+The CPU launcher reuses the weight cache on later starts. Pass `--port 7861` if the default port is occupied. For a GPU environment with CUDA-enabled PyTorch and the [demo dependencies](requirements-demo.txt), invoke `demo.py` with `--device cuda` and the same model paths.
 
-Windows can run out of system commit even when the driver reports free VRAM. Use the low-memory profile when another workload needs the GPU. For a CUDA error, verify that the project interpreter reports `torch.cuda.is_available()`. For an allocation error, free GPU memory and retry the question. The app serves one generation at a time, retains recent turns within a 1,024-token input budget and generates up to 128 new tokens per answer.
+## How the training data was built
 
-### Reproduce the training pipeline
+| Stage | What happens |
+| --- | --- |
+| [Select conversations](data_selection.py) | Score 11,707 conversations for quality and complexity. Use TF-IDF similarity to limit repetition when selecting 2,000 training conversations. Reserve 500 separate examples for validation. |
+| [Prepare the splits](prepare_qwen_data.py) | Convert message lists into chat trajectories and save both splits as an Arrow dataset. |
+| [Train and validate](train.py) | Apply the Qwen chat template and use token offsets to supervise assistant replies. Drop examples that have no prediction targets after truncation. Save the weights and tokenizer together. |
 
-In a separate training environment install PyTorch, Transformers 5.9.0, Datasets, scikit-learn and `ray[train]==2.55.1`. From the project directory:
+To reproduce the pipeline, supply `datamind_12k.json` in the repository root and a local **base model with weights and tokenizer**. Use a separate training environment with PyTorch, Transformers 5.9.0, Datasets, NumPy, scikit-learn and `ray[train]==2.55.1`.
 
-~~~powershell
+```powershell
 python data_selection.py
 python prepare_qwen_data.py
-python train.py --smoke
-~~~
+python train.py --model-dir $model --smoke
+```
 
-Supply `datamind_12k.json` locally. Selection writes split JSON under `runs/selection`; preparation produces a reloadable Arrow dataset under `runs/prepared`. The tiny training run exercises the same worker on real data with five training batches and two validation examples, including a partial gradient accumulation group. Run `python train.py` for the full configuration on a suitable training GPU. To import existing JSONL splits, supply both `--train-jsonl` and `--val-jsonl`. Each training run stores its checkpoint separately from the demo.
+The smoke run trains a small two-layer model on CPU and reloads its checkpoint. To fine-tune the full base model on a suitable GPU, run `python train.py --model-dir $model`. Training runs write to `runs/training/`. See the [Ray Train notebook](raytrain.ipynb) for the original experiment.
 
+## Project materials
 
-
-### Local verification · November 18, 2026
-
-On the Windows laptop, Python 3.11.15 and PyTorch 2.7.1+cpu served the existing 0.8B checkpoint while another local evaluation was active. Three fresh processes passed the offline startup test with outbound TCP blocked. Each recovered from an injected allocation error and a canceled generation, then produced a SQL count query that returned the expected result in SQLite.
-
-The final decoding settings passed 20 API requests across two independent clients per round, including Chinese questions and SQL follow-ups that reused the preceding table name. A headless Edge session submitted a question, regenerated the answer and cleared the chat. Longer answers can reach the 128-token limit, and generated explanations and code still require review. The full-GPU run encountered a Windows allocation error under the concurrent workload.
-
-The rebuilt splits contained 2,000 training and 500 validation conversations with zero shared IDs. After tokenization, 1,986 and 485 examples respectively had usable shifted targets. The separate two-layer Ray smoke run completed two optimizer steps, produced a validation loss of 12.4404 and reloaded its checkpoint.
-
-To rerun the service checks, start the app and run `python verify_demo.py --browser` from a QA environment containing Playwright, gradio_client and an installed Microsoft Edge browser. For the offline failure-recovery check, stop the running app and run `python tests/verify_start.py` from the demo environment.
-
-## From experiment to product proposal
-
-The second part of the project explores **DataLens AI**, a proposed analytics assistant for business teams. Its architecture targets 100,000 concurrent users as a design goal. The experiment report documents the fine-tuning results, while the pitch deck covers use cases and the business model.
-
-[Architecture](Q2_architecture.md) · [Business plan](Q2_business_plan.md) · [Pitch deck](12311701_%E5%BC%A0%E8%88%AA%E6%BA%90DataLens%20AI%20%E8%B7%AF%E6%BC%94PPT.pptx)
+- **Demo verification** · The [offline startup check](tests/verify_start.py) exercises generation and recovery. The [service checks](verify_demo.py) test the running Gradio app through its API and optionally Microsoft Edge.
+- **Product proposal** · DataLens AI explores how the local prototype could serve business teams. The [architecture](Q2_architecture.md), [business plan](Q2_business_plan.md) and [pitch deck](12311701_张航源DataLens%20AI%20路演PPT.pptx) describe the proposed service.
