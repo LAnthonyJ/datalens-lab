@@ -1,163 +1,27 @@
-# Q2 路演 PPT 大纲：DataLens AI
+# DataLens AI investor pitch outline
 
-> 时长：10 分钟 | 幻灯片：12 页 | 目标：天使轮 500 万元融资
+A 12-slide, 10-minute course pitch for a proposed RMB 5 million angel round. Market figures, targets and pricing below are assumptions from the original pitch.
 
----
+| Slide | Time | Speaker notes |
+| --- | --- | --- |
+| 1. Introduction | 30 s | Present DataLens AI as an enterprise analytics assistant. Add the speaker's name and June 2026 date. |
+| 2. The problem | 1 min | The pitch estimates 52 million Chinese SMEs, fewer than 3% with dedicated analysts, and a 3–7 day wait for a simple report. Annual BI fees and training can be prohibitive for small teams. |
+| 3. The product | 1 min | Connect a database in one minute, ask a question in English or Chinese, and view an interactive report. Demonstrate the proposed sequence with “Which five products generated the most revenue in East China last month?” Show generated SQL, execution and the resulting chart. |
+| 4. The training data | 1 min | Of 11,707 DataMind-12K conversations, select 2,000 to fine-tune Qwen3.5-0.8B. Complexity filtering emphasizes joins and nested queries. Quality filtering supports a proposed SQL syntax accuracy target above 95%. Diversity selection covers finance, sales, operations and HR. |
+| 5. Product demonstration | 1 min | Insert a demo screenshot or GIF. Ask about repeat purchases over three months, identify regions where sales fell by more than 20%, and generate a weekly management report from a table. The pitch targets a 30-second turnaround. |
+| 6. Market opportunity | 1 min | Pitch estimates: Chinese BI revenue of RMB 12 billion in 2025 with annual growth above 15%, global conversational AI growing from USD 18.4 billion in 2025 to USD 68.1 billion in 2030 (25% CAGR), and SME AI adoption below 5%. |
+| 7. Competitors | 1 min | Compare ThoughtSpot (enterprise, USD 50K+ annually), Tableau GPT (medium and large firms, USD 15K+), free general-purpose LLMs and DataLens AI (SMEs, roughly RMB 6K per year). Compare learning time and analytics specialization. |
+| 8. Business model | 1 min | Starter at RMB 499/month for individuals and startups, Professional at RMB 1,999 for growing businesses, Enterprise at RMB 4,999 with private deployment. Show the proposed acquisition process from free trial to subscription, feedback and referrals. |
+| 9. Financial projections | 1 min | See the table below. The plan targets break-even in 18 months, lifetime value above six times acquisition cost, and an 85% gross margin. |
+| 10. Funding request | 30 s | Request RMB 5 million for 15% equity at an implied RMB 33.33 million post-money valuation. Allocate RMB 2 million (40%) to R&D, RMB 1.5 million (30%) to marketing, RMB 1 million (20%) to staff and RMB 0.5 million (10%) to operations. |
+| 11. Team and milestones | 30 s | Proposed team: CEO with data science and startup experience, CTO with fine-tuning and distributed systems experience, and two engineers. Months 1–3: MVP. Months 4–6: ten pilot customers. Months 7–9: iterate and convert 50 customers. Months 10–12: target RMB 50,000 monthly recurring revenue and prepare for Series A. |
+| 12. Vision and questions | 30 s | Give every team at China's 52 million SMEs access to an AI analyst. Use Canva as an analogy for a specialist task that a new user can begin within three minutes. Close with contact and demo links. |
 
-## Slide 1: 封面 (30s)
+| Forecast | Year 1 | Year 2 | Year 3 |
+| --- | ---: | ---: | ---: |
+| Customers | 50 | 500 | 2,000 |
+| Revenue (RMB 10,000) | 72 | 720 | 2,880 |
+| Net profit (RMB 10,000) | -208 | -60 | +1,230 |
 
-**DataLens AI：让每个人都能用自然语言分析数据**
+The original outline was drafted with Claude (Anthropic). The prompts requested a ten-minute angel pitch, a connection between Q1 data selection and product differentiation, and slide copy that could be delivered in about one minute per slide.
 
-副标题：企业数据分析助手的下一代解决方案
-
-演讲者：[姓名] | 日期：2026 年 6 月
-
----
-
-## Slide 2: 问题 — 企业数据分析的三大痛点 (1min)
-
-| 痛点 | 现状 |
-|------|------|
-| 懂业务的人不会 SQL | 全国 5,200 万中小企业，专职数据分析师覆盖率 < 3% |
-| 等报表周期太长 | 一个"简单查询"平均等待 3-7 天（提需求 → IT 排期 → 出报表） |
-| 市面工具太贵太复杂 | Tableau/Power BI 年费数万且要培训，不适合中小团队 |
-
-**核心问题**：业务人员的分析需求被"技术门槛"和"响应速度"卡住了
-
----
-
-## Slide 3: 解决方案 — DataLens AI (1min)
-
-**一句话定义**：用自然语言直接查询企业数据，秒级出结果。
-
-```
-用户："上个月华东区销售额最高的 5 个产品是什么？"
-        ↓
-DataLens AI → 自动生成 SQL → 执行查询 → 报表 + 图表
-```
-
-**三步体验**：
-1. 连接数据库（1 分钟配置）
-2. 用中文/英文输入问题
-3. 获得分析结果 + 可交互图表
-
----
-
-## Slide 4: 为什么是我们 — Q1 核心数据技术 (1min)
-
-| 我们的技术 | 解决的问题 | 对应 Q1 方法 |
-|-----------|-----------|-------------|
-| 复杂查询能力 | 处理多表 JOIN、嵌套子查询 | Complexity Filtering |
-| 高准确率 | SQL 语法正确率 > 95%，生产可用 | Quality Filtering |
-| 全业务覆盖 | 财务、销售、运营、HR 都能用 | Diversity Selection |
-
-**逻辑链**：DataMind-12K (11,707 条) → 三阶段筛选 (2000 条精品) → 微调 Qwen3.5-0.8B → 领域专用的数据分析模型
-
----
-
-## Slide 5: 产品演示 (1min)
-
-**【插入 Demo 截图/GIF】**
-
-展示 3 个能力：
-1. "帮我查一下过去三个月客户复购率的变化趋势"
-2. "找出销售额下降超过 20% 的地区，分析可能原因"
-3. "根据这张表的数据，生成一份管理层周报"
-
-**效果**：非技术人员 30 秒内获得专业数据分析结果
-
----
-
-## Slide 6: 市场机会 (1min)
-
-```
-中国 BI 市场规模：¥120 亿（2025），年增长 15%+
-对话式 AI 市场：全球 $18.4B（2025）→ $68.1B（2030），CAGR 25%
-中小企业 AI 渗透率：< 5%（巨大蓝海）
-```
-
-**我们的定位**：对话式 BI × SME 市场 = **价格可负担的 AI 数据分析师**
-
----
-
-## Slide 7: 竞品对比 (1min)
-
-| | ThoughtSpot | Tableau GPT | 通用 LLM | **DataLens AI** |
-|--|------------|-------------|---------|----------------|
-| 面向客户 | 大企业 | 中大型 | 所有 | **中小企业** |
-| 年费 | $50K+ | $15K+ | 免费 | **¥6K 起** |
-| 学习成本 | 中 | 高 | 低 | **零** |
-| 数据场景优化 | ✓ | ✓ | ✗ | **✓✓** |
-
-我们在大厂不愿做的"低客单价 × 高体验要求"区间建立根据地。
-
----
-
-## Slide 8: 商业模式 (1min)
-
-| 版本 | 月费 | 目标客户 |
-|------|------|---------|
-| Starter | ¥499 | 初创团队 / 个人 |
-| Professional | ¥1,999 | 成长型企业 |
-| Enterprise | ¥4,999 | 中大型企业（私有部署）|
-
-**增长飞轮**：免费试用 → 自助付费 → 数据积累 → 模型更好 → 口碑传播 → 更多用户
-
----
-
-## Slide 9: 财务预测 (1min)
-
-```
-            Year 1     Year 2     Year 3
-客户数        50         500        2,000
-年收入(万)    72         720        2,880
-净利润(万)   -208        -60        +1,230
-```
-
-- 18 个月盈亏平衡
-- LTV/CAC > 6x
-- 毛利率 85%（SaaS 模式）
-
----
-
-## Slide 10: 融资需求 (30s)
-
-**天使轮：¥500 万，出让 15% 股权（投后估值 ¥3,333 万）**
-
-| 用途 | 金额 |
-|------|------|
-| 产品研发（含模型迭代） | ¥200 万 (40%) |
-| 市场推广（含种子用户获取） | ¥150 万 (30%) |
-| 团队建设（核心工程师+运营） | ¥100 万 (20%) |
-| 运营及其他 | ¥50 万 (10%) |
-
----
-
-## Slide 11: 团队 & 里程碑 (30s)
-
-**核心团队**：CEO（数据科学+创业经验）+ CTO（LLM 微调+分布式系统）+ 2 名工程师
-
-**12 个月关键里程碑**：
-- M1-M3: MVP 开发完成
-- M4-M6: 10 个种子客户试用
-- M7-M9: 产品迭代 + 付费转化 50 客户
-- M10-M12: MRR ¥50,000，准备 A 轮融资
-
----
-
-## Slide 12: 愿景 (30s)
-
-> "让中国 5,200 万中小企业，每个团队都有一个 AI 数据分析师。"
-
-**我们想做数据分析领域的 Canva**——把曾经需要专业技能的事情，变成任何人都能 3 分钟上手的工具。
-
-### 谢谢！Q&A
-
-联系方式：[邮箱] | Demo 地址：[链接]
-
----
-
-*本文档使用 Claude (Anthropic) 辅助撰写。提示词：*
-1. "撰写一个 LLM 创业项目的 10 分钟路演 PPT 大纲，面向天使投资人"
-2. "将 Q1 项目中的数据选择方法与创业技术壁垒建立逻辑关联"
-3. "设计简洁有力的 PPT 页面文案，每页控制在 1 分钟演讲"

@@ -1,225 +1,61 @@
-# Project 2 汇报 PPT 大纲：Data Agent 系统与创业计划
+# Project 2 presentation outline
 
-> 时长：10 分钟 | 幻灯片：14 页 | 重点：挑战 & 解决方案
+A 14-slide course presentation for a ten-minute technical defense, focused on the five engineering challenges.
 
----
+## Slide 1. Project 2: Data Agent System and LLM Startup Business Plan (20 s)
 
-## Slide 1: 封面 (20s)
+Open with the course title, Big Data Software and Applications, June 2026, the speaker's name and student ID.
 
-**Project 2: Data Agent System & LLM Startup Business Plan**
+## Slide 2. Project overview (30 s)
 
-大数据软件与应用 | 2026 年 6 月
+Q1 (10 points) moves from data selection to fine-tuning Qwen3.5-0.8B and a web demo. Q2 (6 points) uses the experiment as the basis for a business plan and a deployment architecture.
 
-演讲者：[姓名] | 学号：XXXXXXXX
+## Slide 3. Three selection methods (40 s)
 
----
+Present a three-column table of method, rationale and use case. Complexity filtering favors multi-table joins and nested SQL. CLEAR-inspired quality filtering reduces malformed and contradictory examples. DEITA-inspired diversity selection uses TF-IDF cosine similarity. Rank examples by complexity × quality and use a similarity threshold of 0.85.
 
-## Slide 2: 项目总览 (30s)
+## Slide 4. Processing DataMind-12K (30 s)
 
-**两大模块：**
+Diagram the 11,707 conversations, ranking, the 15th-percentile quality cutoff and diversity selection. Show 2,000 training and 500 validation examples with zero shared IDs. Mean complexity rises from 0.35 to 0.52 and mean quality from 0.65 to 0.78. Convert messages to the trajectory format used by the Qwen chat template.
 
-| 模块 | 内容 | 分值 |
-|------|------|------|
-| Q1: Data Agent System | 数据筛选 → 模型微调 → Web Demo | 10 pts |
-| Q2: Startup Plan | 商业计划书 + 系统架构设计 | 6 pts |
+## Slide 5. Diagnosing NaN loss (1 min)
 
-**核心逻辑链：**
+Training loss immediately became NaN. Inspect the dataset, tokenizer and rendered conversation in order. The preprocessing code looked for an assistant marker from a different model version. Render a sample with apply_chat_template, locate the Qwen3.5 assistant marker and skip examples without trainable assistant tokens.
 
-```
-数据筛选 (Q1.1-Q1.2) → 微调 Qwen3.5-0.8B (Q1.3) → Web Demo (Q1.4) → 创业落地 (Q2)
-```
+## Slide 6. Overfitting on 2,000 examples (1 min)
 
----
+The fine-tuned model repeatedly returned get_db_info() regardless of the question. The base-only check produced normal replies. Compare three epochs with one, learning rates of 2e-4 and 5e-5, and weight decay of 0 and 0.01. Explain how these changes reduce memorization.
 
-## Slide 3: Q1.1 三种数据筛选方法 (40s)
+## Slide 7. GPU migration and out-of-memory errors (1 min)
 
-**目标**：从 11,707 条 DataMind-12K 中精选 2,000 条高质量训练数据
+Compare Colab's T4 (15 GB VRAM, 12 GB host RAM), AutoDL's RTX 5090 (32 GB, package download and path issues), and the university L20 (48 GB, with 7.78 GB in use by another process). Tokenize outside Ray workers, reduce batch size from eight to four, accumulate four batches, enable gradient checkpointing and cap sequences at 1,024 tokens.
 
-| 方法 | 核心思想 | 解决的问题 |
-|------|---------|-----------|
-| Complexity Filtering | 保留复杂 SQL、多表 JOIN、嵌套查询 | 模型能处理真实企业场景 |
-| Quality Filtering (CLEAR) | 过滤 SQL 语法错误、逻辑矛盾样本 | 生产环境可靠性 |
-| Diversity Selection (DEITA) | TF-IDF + 余弦相似度去重 | 覆盖财务/销售/运营/HR 多领域 |
+## Slide 8. Finding the assistant tokens (40 s)
 
-**评分公式**：$C(s) \times Q(s)$，相似度阈值 0.85 去重
+Qwen3.5 can include thinking blocks. Render with tokenizer.apply_chat_template(tokenize=False), locate the <|im_start|>assistant marker followed by a newline and map character offsets to tokens with offset_mapping. Compute loss over assistant tokens and skip examples without a usable span.
 
----
+## Slide 9. Web demo and compatibility (1 min)
 
-## Slide 4: Q1.2 数据处理 Pipeline (30s)
+Show streaming responses to five preset prompts. The historical demo used repetition_penalty=1.2 and no_repeat_ngram_size=4. ModelScope provided a download fallback after Hugging Face mirror SSL errors. The demo adapted to the older Gradio API, added a system prompt and offered --cpu-only. Historical timing estimates were 30–90 seconds per CPU response and 2–5 seconds on GPU.
 
-```
-11,707 条 → 评分排序 → 过滤低质量 (15%) → 多样性去重 → 2,000 train + 500 val
-```
+## Slide 10. Training results (30 s)
 
-**关键数字**：
-- 训练集 Complexity 从 0.35 → 0.52
-- 训练集 Quality 从 0.65 → 0.78
-- Train/Val 零重叠
-- 输出格式：Qwen Chat Template (`messages` → `trajectory`)
+Insert terminal output and a demo screenshot. The original L20 run reported 125 steps, an effective batch size of 16, about eight minutes of training, final loss of 0.098 and roughly 3 GB for the Qwen3.5-0.8B model.
 
----
+## Slide 11. DataLens AI business proposal (40 s)
 
-## Slide 5: 挑战 1 — NaN Loss 问题 (1min)
+Connect the three selection methods to complex enterprise queries, a proposed SQL correctness target above 95%, and coverage across finance, sales, operations and HR. The architecture targets 100,000 concurrent connections using vLLM, Kafka, Redis and Kubernetes, with an estimated monthly cost of RMB 60,000.
 
-**现象**：训练开始后 loss 立即变成 NaN
+## Slide 12. Technology stack (30 s)
 
-**排查过程**：
-1. 检查数据格式 → 正常
-2. 检查 tokenizer → 发现问题：Qwen2.5 用 `"的助理"` 作为 assistant 标记，Qwen3.5 用 `<|im_start|>assistant\n`
-3. 使用 `apply_chat_template` 渲染一条样本，确认 Qwen3.5 的真正格式
+Show the layers: DataMind-12K and the Qwen format for data, Ray Train and PyTorch on the L20 for training, vLLM or Transformers with TextIteratorStreamer for serving, Gradio for chat, and Nginx, Kong, Kafka, vLLM, Redis and Kubernetes in the proposed deployment.
 
-**根因**：预处理函数用了 Qwen2.5 的模板去匹配 Qwen3.5 的输出
+## Slide 13. Lessons learned (30 s)
 
-**解决**：重写 `preprocess_dataset`，使用 `<|im_start|>assistant\n` 字符级偏移映射定位 assistant token span，并自动跳过无有效 assistant 的样本
+Cover data selection and correct templates, systematic debugging of NaN loss, interactions between sample count and optimization settings, compatibility across hardware and libraries, and the engineering and business decisions that follow model training.
 
-**教训**：不同版本模型 chat template 差异很大，不能直接套用
+## Slide 14. Questions and deliverables (20 s)
 
----
+Close with contact details and links to data_selection.py, prepare_qwen_data.py, raytrain.ipynb, demo.py, Q2_business_plan.md, Q2_architecture.md, Q2_roadshow_outline.md and report.tex.
 
-## Slide 6: 挑战 2 — 过拟合 (1min)
-
-**现象**：微调后模型无论问什么都回复 `get_db_info()` 相关重复内容
-
-**分析**：
-- 仅 2,000 条训练数据
-- 初始设置：3 epochs, lr=2e-4, 无正则化
-- 模型在少量数据上快速记忆而非泛化
-
-**解决**：
-
-| 参数 | 修改前 | 修改后 |
-|------|--------|--------|
-| Epochs | 3 | 1 |
-| Learning Rate | 2e-4 | 5e-5 |
-| Weight Decay | 0 | 0.01 |
-
-**验证**：base-only 模式回复正常 → 确认是微调阶段过拟合
-
----
-
-## Slide 7: 挑战 3 — GPU 环境迁移 & OOM (1min)
-
-**经历了三种 GPU 环境**：
-
-| 环境 | GPU | 显存 | 遇到的问题 |
-|------|-----|------|-----------|
-| Colab | T4 | 15GB | OOM（12GB 系统 RAM 不足） |
-| AutoDL | RTX 5090 | 32GB | pip 网络卡顿、路径不兼容 |
-| 学校服务器 | NVIDIA L20 | 48GB | 另一进程占用 7.78GB 显存 |
-
-**OOM 解决方案**：
-- 预 tokenization 在 Ray workers 外完成（减少 Ray object store 压力）
-- batch_size 8→4, gradient_accumulation=4
-- 启用 `gradient_checkpointing`
-- 限制 `max_seq_length=1024`
-
-**最终**：L20 上 125 步 ~8 分钟完成训练，loss=0.098
-
----
-
-## Slide 8: 挑战 4 — Qwen3.5 Chat Template 适配 (40s)
-
-**Qwen3.5 的特殊性**：
-- 助手回复中自动注入 `<think>...</think>` 推理块
-- 不能用简单截断去找 assistant token 位置
-
-**解决方案**：
-1. 用 `tokenizer.apply_chat_template(tokenize=False)` 获取渲染文本
-2. 在文本中搜索 `<|im_start|>assistant\n` 标记位置
-3. 建字符→token 偏移映射 (`offset_mapping`)
-4. 精确找到 assistant token 的起止位置用于 loss 计算
-5. 跳过找不到 assistant 的异常样本
-
----
-
-## Slide 9: Q1.4 Web Demo + 挑战 5 (1min)
-
-**Demo 功能**：
-- 自然语言输入 → 流式生成回复
-- 5 个预设数据分析示例
-- 防重复：`repetition_penalty=1.2`, `no_repeat_ngram_size=4`
-
-**挑战 5：模型下载 & Gradio 兼容性**
-
-| 问题 | 解决 |
-|------|------|
-| HuggingFace/HF-Mirror SSL 错误 | 改用 ModelScope (`modelscope.snapshot_download`) |
-| Gradio 版本 `type` 参数不支持 | 适配旧版 API 格式 |
-| CPU 推理 30-90s/回复太慢 | 说明可在 GPU 上 2-5s，提供 `--cpu-only` 选项 |
-| 模型输出格式异常 | 添加 System Prompt 引导自然语言回复 |
-
----
-
-## Slide 10: 最终训练结果 (30s)
-
-**【截图：训练终端输出】**
-
-| 指标 | 数值 |
-|------|------|
-| 最终 Loss | 0.098 |
-| 训练步数 | 125 |
-| 有效 Batch Size | 16 |
-| 训练时间 | ~8 分钟 (L20) |
-| 模型大小 | Qwen3.5-0.8B (~3GB) |
-
-**【截图：Demo 界面】**
-
----
-
-## Slide 11: Q2 — 创业计划 & 架构设计 (40s)
-
-**DataLens AI**：用自然语言查询企业数据的 SaaS 平台
-
-**Q1 数据筛选 → 创业技术壁垒**：
-
-| 筛选方法 | 商业价值 |
-|---------|---------|
-| Complexity Filtering | 处理复杂企业查询（多表 JOIN） |
-| Quality Filtering | SQL 正确率 >95%，生产可用 |
-| Diversity Selection | 覆盖财务/销售/运营/HR 全业务 |
-
-**系统架构亮点**：支持 10 万并发，vLLM + Kafka + Redis + K8s，月成本 ~¥6 万
-
----
-
-## Slide 12: 技术栈总结 (30s)
-
-```
-数据层：DataMind-12K → 三阶段筛选 → Qwen 格式
-训练层：Ray Train + PyTorch + L20 GPU
-推理层：vLLM / Transformers + TextIteratorStreamer
-前端层：Gradio Chatbot
-架构层：Nginx → Kong → Kafka → vLLM → Redis → K8s
-```
-
----
-
-## Slide 13: 关键收获 (30s)
-
-1. **数据质量 > 数据数量**：2,000 条精选数据 + 正确模板 = 可用模型
-2. **调试需要系统性**：NaN loss → 排查模板格式 → 发现版本差异 → 修复
-3. **过拟合不仅是 epoch 问题**：lr + weight_decay + 数据量综合作用
-4. **环境兼容性很重要**：三种 GPU 环境、两种模型下载源、Gradio 版本差异
-5. **LLM 应用 = 模型 + 工程**：训练只是起点，部署、架构、商业模式缺一不可
-
----
-
-## Slide 14: 谢谢！Q&A (20s)
-
-**交付物清单**：
-
-| 类别 | 文件 |
-|------|------|
-| 数据筛选 | `data_selection.py`, `prepare_qwen_data.py` |
-| 模型训练 | `ray_train_exercise.ipynb` |
-| Web Demo | `demo.py` |
-| 商业计划 | `Q2_business_plan.md` |
-| 架构设计 | `Q2_architecture.md` |
-| 路演 PPT | `Q2_roadshow_outline.md` |
-| 实验报告 | `report.tex` |
-
-联系方式：[邮箱] | GitHub：[链接]
-
----
-
-*本文档使用 Claude (Anthropic) 辅助撰写。*
+The original outline was drafted with assistance from Claude (Anthropic).

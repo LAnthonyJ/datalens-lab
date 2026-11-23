@@ -250,7 +250,7 @@ def main(argv=None):
         except (ValueError, RuntimeError) as exc:
             raise gr.Error(str(exc)) from exc
     ui = gr.ChatInterface(chat, title="DataLens Lab", description="An offline data analysis assistant.",
-                          examples=["Write a SQL query to count rows in sales.", "如何处理数据集中的缺失值？"],
+                          examples=["Write a SQL query to count rows in sales.", "How should I handle missing values in a dataset?"],
                           concurrency_limit=1, cache_examples=False, api_name="chat")
     ui.queue(max_size=4).launch(server_name=args.server_name, server_port=args.port, share=False)
 

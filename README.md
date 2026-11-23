@@ -1,10 +1,10 @@
-[![DataLens Lab. A glass lens brings scattered data points into focus. Watch the project walkthrough.](docs/media/datalens-lens.png)](12311701_张航源.mp4)
+[![DataLens Lab. A glass lens brings scattered data points into focus. Watch the project walkthrough.](docs/media/datalens-lens.png)](12311701_%E5%BC%A0%E8%88%AA%E6%BA%90.mp4)
 
 # DataLens Lab
 
 How do you choose 2,000 conversations to teach a small language model about data analysis? This experiment starts with 11,707 conversations from DataMind-12K, fine-tunes Qwen3.5-0.8B with Ray Train, and puts the resulting assistant in a Gradio chat interface for questions about SQL, Python, and statistics.
 
-[Watch the walkthrough · 8 min 53 sec](12311701_张航源.mp4) · [Read the experiment report](12311701_张航源.pdf) · [Explore the training notebook](code_12311701_张航源_raytrain.ipynb)
+[Watch the walkthrough · 8 min 53 sec](12311701_%E5%BC%A0%E8%88%AA%E6%BA%90.mp4) · [Read the experiment report](12311701_%E5%BC%A0%E8%88%AA%E6%BA%90.pdf) · [Explore the training notebook](raytrain.ipynb)
 
 ## Inside the demo
 
@@ -12,7 +12,7 @@ How do you choose 2,000 conversations to teach a small language model about data
 
 ![The Gradio demo showing a user's question about L1 and L2 regularization and the fine-tuned model's response.](docs/media/gradio-session.png)
 
-*Gradio session captured on page 9 of the [experiment report](12311701_张航源.pdf).* Other example prompts ask for a SQL query to rank customers by total purchases and Python code to plot a correlation matrix.
+*Gradio session captured on page 9 of the [experiment report](12311701_%E5%BC%A0%E8%88%AA%E6%BA%90.pdf).* Other example prompts ask for a SQL query to rank customers by total purchases and Python code to plot a correlation matrix.
 
 ## Choosing the training data
 
@@ -25,7 +25,7 @@ flowchart LR
     E --> F["500 validation conversations"]
 ```
 
-The selection script estimates complexity from signals such as difficulty, turn count, and code blocks. It uses the 15th percentile of quality scores as a cutoff, ranks candidates by their combined score, and compares TF-IDF vectors using cosine similarity to limit repetition. The validation set is sampled by difficulty level. [Read the selection code](code_12311701_张航源_data_selection.py)
+The selection script estimates complexity from signals such as difficulty, turn count, and code blocks. It uses the 15th percentile of quality scores as a cutoff, ranks candidates by their combined score, and compares TF-IDF vectors using cosine similarity to limit repetition. The validation set is sampled by difficulty level. [Read the selection code](data_selection.py)
 
 | Selection metric | Source dataset | Training set | Validation set |
 | --- | ---: | ---: | ---: |
@@ -38,8 +38,8 @@ Early runs missed the start of some assistant replies in the Qwen3.5 chat templa
 
 | Experiment stage | Source |
 | --- | --- |
-| Format the conversations | [Data preparation script](code_12311701_张航源_prepare_qwen_data.py) |
-| Train the model | [Ray Train notebook](code_12311701_张航源_raytrain.ipynb) |
+| Format the conversations | [Data preparation script](prepare_qwen_data.py) |
+| Train the model | [Ray Train notebook](raytrain.ipynb) |
 | Inspect responses | [Inference script](test_inference.py) · [Gradio app](demo.py) |
 
 ## Run the offline demo on Windows
@@ -66,8 +66,8 @@ Windows can run out of system commit even when the driver reports free VRAM. Use
 In a separate training environment install PyTorch, Transformers 5.9.0, Datasets, scikit-learn and `ray[train]==2.55.1`. From the project directory:
 
 ~~~powershell
-python code_12311701_张航源_data_selection.py
-python code_12311701_张航源_prepare_qwen_data.py
+python data_selection.py
+python prepare_qwen_data.py
 python train.py --smoke
 ~~~
 
@@ -89,4 +89,4 @@ To rerun the service checks, start the app and run `python verify_demo.py --brow
 
 The second part of the project explores **DataLens AI**, a proposed analytics assistant for business teams. Its architecture targets 100,000 concurrent users as a design goal. The experiment report documents the fine-tuning results, while the pitch deck covers use cases and the business model.
 
-[Architecture](Q2_architecture.md) · [Business plan](Q2_business_plan.md) · [Pitch deck](12311701_张航源DataLens%20AI%20路演PPT.pptx)
+[Architecture](Q2_architecture.md) · [Business plan](Q2_business_plan.md) · [Pitch deck](12311701_%E5%BC%A0%E8%88%AA%E6%BA%90DataLens%20AI%20%E8%B7%AF%E6%BC%94PPT.pptx)

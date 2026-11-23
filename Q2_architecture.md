@@ -1,60 +1,58 @@
-# Q2.2 系统架构设计文档：DataLens AI
+# DataLens AI deployment architecture
 
-> 目标：设计支持 **10 万级并发**的工业级 LLM 应用部署架构，涵盖推理引擎、数据处理、数据库、缓存、消息队列、负载均衡、监控运维等模块。
+This course design targets **100,000 concurrent connections**. The inference budget below allows roughly 100 completed requests per second, with excess requests queued. All capacities and costs are planning estimates.
 
----
-
-## 1. 架构总览
+## 1. Architecture overview
 
 ```mermaid
 graph TB
-    subgraph "接入层"
+    subgraph "Ingress"
         DNS[DNS / CDN]
-        LB[负载均衡 Nginx/Kong]
+        LB[Load balancer: Nginx/Kong]
     end
 
-    subgraph "应用层"
+    subgraph "Application"
         API[API Gateway]
-        WS[WebSocket 服务]
-        AUTH[认证服务 OAuth/JWT]
+        WS[WebSocket service]
+        AUTH[OAuth/JWT authentication]
     end
 
-    subgraph "核心服务层"
-        QUERY[查询解析服务]
-        SQLGEN[SQL 生成服务]
-        ANALYZE[分析引擎]
-        REPORT[报表服务]
+    subgraph "Core services"
+        QUERY[Query parser]
+        SQLGEN[SQL generator]
+        ANALYZE[Analytics engine]
+        REPORT[Reporting]
     end
 
-    subgraph "LLM 推理层"
-        vLLM[vLLM 推理集群]
+    subgraph "LLM inference"
+        vLLM[vLLM cluster]
         MODEL[Qwen3.5-0.8B Fine-tuned]
-        RATE[速率限制器]
+        RATE[Rate limiter]
     end
 
-    subgraph "数据处理层"
-        ETL[数据预处理 ETL]
-        EMBED[向量化 Embedding]
-        SEARCH[检索服务 RAG]
+    subgraph "Data processing"
+        ETL[ETL preprocessing]
+        EMBED[Vector embeddings]
+        SEARCH[RAG retrieval]
     end
 
-    subgraph "存储层"
-        PG[(PostgreSQL 元数据)]
-        CH[(ClickHouse 分析库)]
-        REDIS[(Redis 缓存集群)]
-        OSS[(对象存储 日志/文件)]
+    subgraph "Storage"
+        PG[(PostgreSQL metadata)]
+        CH[(ClickHouse analytics)]
+        REDIS[(Redis cache cluster)]
+        OSS[(Object storage for logs and files)]
     end
 
-    subgraph "消息 & 流处理"
-        KAFKA[Kafka 消息队列]
-        FLINK[Flink 实时流处理]
+    subgraph "Messaging and streaming"
+        KAFKA[Kafka message queue]
+        FLINK[Flink stream processing]
     end
 
-    subgraph "监控运维层"
-        PROM[Prometheus 指标采集]
-        GRAF[Grafana 可视化]
-        ELK[ELK 日志分析]
-        ALERT[AlertManager 告警]
+    subgraph "Observability"
+        PROM[Prometheus metrics]
+        GRAF[Grafana dashboards]
+        ELK[ELK log analytics]
+        ALERT[Alertmanager notifications]
     end
 
     DNS --> LB
@@ -81,148 +79,110 @@ graph TB
     PROM --> ALERT
 ```
 
----
+## 2. Service design
 
-## 2. 各模块详细设计
+### Inference
 
-### 2.1 LLM 推理层
+Run the fine-tuned Qwen3.5-0.8B model with vLLM v0.6+ using PagedAttention and continuous batching. The design assumes about 2 GB of model memory per instance, eight NVIDIA A10 or L20 GPUs per node with 24–48 GB per GPU, optional 4-bit AWQ, and at least ten replicas managed by Kubernetes HPA.
 
-**选型**：vLLM + Qwen3.5-0.8B (fine-tuned)
-
-| 配置项 | 规格 | 说明 |
-|--------|------|------|
-| 推理框架 | vLLM v0.6+ | 支持 PagedAttention、Continuous Batching |
-| 模型 | Qwen3.5-0.8B | 显存需求约 2GB/实例 |
-| GPU 节点 | 8× NVIDIA A10/L20 | 每节点 24-48GB 显存 |
-| 并发吞吐 | ~5000 tokens/s per GPU | vLLM batching 可提升 10-20x 吞吐 |
-| 副本数 | 10+ | Kubernetes HPA 自动扩缩容 |
-| 量化 | AWQ 4-bit (可选) | 进一步降低显存需求 |
-
-**并发计算**：假设每条请求生成 500 tokens，单 GPU 可处理 10 条/秒并发请求。10 个 GPU 副本 = 100 req/s 实时处理。配合请求队列（Kafka），可将突发流量缓冲，峰值支持 10 万并发连接的请求排队处理。
+At 5,000 output tokens per GPU-second and 500 tokens per request, each GPU serves about 10 requests per second. Ten replicas serve about 100 requests per second. The proposal assumes a 10–20× throughput improvement with batching, prefix KV-cache sharing across turns, priority for paying customers through a Redis sorted set, and a 5–30 minute cache for common queries such as monthly sales.
 
 ```mermaid
 graph LR
-    REQ[推理请求] --> QUEUE[Redis 优先级队列]
-    QUEUE --> SCHED[vLLM 调度器]
+    REQ[Inference request] --> QUEUE[Redis priority queue]
+    QUEUE --> SCHED[vLLM scheduler]
     SCHED --> GPU0[GPU 0: Replica 1]
     SCHED --> GPU1[GPU 1: Replica 2]
     SCHED --> GPU2[GPU N: Replica N]
-    GPU0 --> CACHE[结果缓存 Redis]
+    GPU0 --> CACHE[Redis result cache]
 ```
 
-**优化策略**：
-- **Continuous Batching**：动态批处理，吞吐提升 10x
-- **KV Cache 复用**：相同前缀的请求共享 KV 缓存（适用于多轮对话）
-- **请求优先级**：付费用户高优先级，通过 Redis Sorted Set 实现
-- **结果缓存**：高频重复查询（如"本月销售额"）缓存 5-30 分钟
+### Load balancing and API gateway
 
----
+Alibaba Cloud DNS or Cloudflare directs global traffic. A CDN serves static files. Nginx or HAProxy distributes TCP connections at layer 4. Kong or APISIX handles authentication, routing, rate limits, logging and plugins. Consul or Kubernetes Services provide discovery and health checks.
 
-### 2.2 负载均衡 & API 网关
+The Nginx estimate uses four workers with 65,535 worker connections each. Stateless gateways scale horizontally. Kubernetes can adjust pod counts based on CPU, memory and QPS.
 
 ```mermaid
 graph TB
-    USER[用户请求] --> DNS[Global DNS]
-    DNS --> CDN[CDN 静态资源]
-    DNS --> LB[Nginx 四层负载均衡]
+    USER[User request] --> DNS[Global DNS]
+    DNS --> CDN[Static assets on CDN]
+    DNS --> LB[Nginx L4 load balancer]
     LB --> GW1[Kong API Gateway-1]
     LB --> GW2[Kong API Gateway-2]
-    GW1 --> SVC[后端服务注册中心 Consul]
-    SVC --> NODE1[服务节点群]
+    GW1 --> SVC[Consul service registry]
+    SVC --> NODE1[Service nodes]
 ```
 
-| 组件 | 选型 | 功能 |
-|------|------|------|
-| DNS | 阿里云 DNS / Cloudflare | 全球流量调度 |
-| L4 负载均衡 | Nginx / HAProxy | TCP 层连接分发，10 万+ 并发连接 |
-| API 网关 | Kong / APISIX | 认证、限流、路由、日志、插件 |
-| 服务发现 | Consul / K8s Service | 服务注册、健康检查 |
+### Data processing
 
-**并发设计**：
-- Nginx 单机可处理 10 万+ 并发连接（worker_connections 65535 × worker_processes 4）
-- Kong 集群水平扩展，无状态设计
-- K8s HPA 根据 CPU/内存/QPS 自动扩缩 Pod
-
----
-
-### 2.3 数据处理层
+Connectors discover schemas and sample enterprise databases. PostgreSQL holds metadata. Milvus stores embeddings for retrieval. The context builder combines schema and retrieved examples for inference. In a private deployment, processing stays inside the corporate network. The design includes rule-based PII masking and an audit trail of SQL executions.
 
 ```mermaid
 graph TB
-    DB[企业数据库] --> CONN[数据库连接器]
+    DB[Enterprise database] --> CONN[Database connector]
     CONN --> ETL[ETL Pipeline]
-    ETL --> SCHEMA[Schema 感知]
-    ETL --> SAMPLE[数据采样]
-    SCHEMA --> META[元数据库 PG]
-    SAMPLE --> VEC[向量化]
-    VEC --> MILVUS[(Milvus 向量库)]
-    MILVUS --> RAG[RAG 检索增强]
-    META --> CTX[上下文构建]
+    ETL --> SCHEMA[Schema discovery]
+    ETL --> SAMPLE[Data sampling]
+    SCHEMA --> META[PostgreSQL metadata]
+    SAMPLE --> VEC[Vector embeddings]
+    VEC --> MILVUS[(Milvus vector database)]
+    MILVUS --> RAG[RAG retrieval]
+    META --> CTX[Context assembly]
     RAG --> CTX
-    CTX --> LLM[LLM 推理]
+    CTX --> LLM[LLM inference]
 ```
 
-**数据安全**：
-- **私有化部署模式**：所有数据处理在企业内网完成，不出网
-- **数据脱敏**：敏感字段自动识别 + 脱敏（正则 PII 检测）
-- **审计日志**：所有 SQL 执行记录留底，支持合规审计
+### Storage
 
----
+| Service | Purpose | Proposed capacity |
+| --- | --- | --- |
+| PostgreSQL 14+ | Users, tenants, subscriptions and configuration | Primary and replica, 500 GB SSD |
+| ClickHouse | Query logs, aggregates and user behavior | Cluster, 2 TB SSD |
+| Redis 7 Cluster | Sessions, rate counters and cached results | Three primaries and three replicas, 64 GB |
+| Milvus | Schema vector index | Single node, 128 GB |
+| MinIO or S3 | Reports, archived logs and model backups | Expandable object storage |
 
-### 2.4 存储层设计
+### Background jobs
 
-| 存储 | 选型 | 用途 | 容量规划 |
-|------|------|------|---------|
-| 关系型 | PostgreSQL 14+ | 用户、租户、订阅、配置 | 主从，SSD 500GB |
-| 分析型 | ClickHouse | 查询日志、统计聚合、用户行为 | 集群，SSD 2TB |
-| 缓存 | Redis 7 Cluster | 会话、限流计数器、查询结果缓存 | 3 主 3 从，64GB |
-| 向量 | Milvus | Schema 向量索引（RAG） | 单节点 128GB |
-| 对象 | MinIO / S3 | 报表文件、日志归档、模型备份 | 无限扩展 |
-
----
-
-### 2.5 消息队列 & 异步处理
+Kafka buffers sudden traffic increases and separates incoming requests from slow queries, report generation and log collection. Workers notify Redis when jobs finish. WebSocket connections deliver progress and results to clients.
 
 ```mermaid
 graph LR
-    USER[用户请求] --> API
+    USER[User request] --> API
     API --> KAFKA[Kafka Topic: queries]
-    KAFKA --> WORKER1[Worker: SQL 生成]
-    KAFKA --> WORKER2[Worker: 报表生成]
-    KAFKA --> WORKER3[Worker: 日志收集]
-    WORKER1 --> REDIS[结果通知]
+    KAFKA --> WORKER1[SQL generation worker]
+    KAFKA --> WORKER2[Report worker]
+    KAFKA --> WORKER3[Log collection worker]
+    WORKER1 --> REDIS[Result notification]
     WORKER2 --> REDIS
-    REDIS --> WS[WebSocket 推送结果]
+    REDIS --> WS[WebSocket delivery]
 ```
 
-- **Kafka**：解耦前端请求和后台处理，削峰填谷
-- **异步处理**：耗时操作（报表生成、大表查询）通过消息队列异步执行，不阻塞用户
-- **WebSocket**：长连接推送任务进度和结果，避免用户轮询
+### Tenant isolation and billing
 
----
-
-### 2.6 多租户架构
+Each tenant receives a database schema and a Redis namespace. Tenants share the GPU pool. Usage metering counts tokens and API calls.
 
 ```mermaid
 graph TB
-    subgraph "租户隔离"
-        T1[租户 A: 电商]
-        T2[租户 B: 金融]
-        T3[租户 C: 制造]
+    subgraph "Tenant isolation"
+        T1[Tenant A: retail]
+        T2[Tenant B: finance]
+        T3[Tenant C: manufacturing]
     end
 
-    subgraph "共享服务"
-        LLM[LLM 推理集群 共享]
-        INFRA[基础设施 共享]
+    subgraph "Shared services"
+        LLM[Shared inference cluster]
+        INFRA[Shared infrastructure]
     end
 
-    subgraph "隔离资源"
-        DB1[(数据库 A)]
-        DB2[(数据库 B)]
-        DB3[(数据库 C)]
-        CACHE1[(缓存命名空间 A)]
-        CACHE2[(缓存命名空间 B)]
-        CACHE3[(缓存命名空间 C)]
+    subgraph "Isolated resources"
+        DB1[(Database A)]
+        DB2[(Database B)]
+        DB3[(Database C)]
+        CACHE1[(Cache namespace A)]
+        CACHE2[(Cache namespace B)]
+        CACHE3[(Cache namespace C)]
     end
 
     T1 --> DB1
@@ -233,83 +193,62 @@ graph TB
     T3 --> LLM
 ```
 
-- **数据隔离**：每个租户独立数据库 Schema，查询结果通过 Redis namespace 隔离
-- **计算共享**：LLM 推理资源池化共享，提高 GPU 利用率
-- **计费计量**：按 token 使用量 + API 调用次数计费
-
----
-
-### 2.7 监控运维层
+### Monitoring and operations
 
 ```mermaid
 graph TB
-    subgraph "日志收集"
-        APP[应用日志] --> FLUENT[Fluentd Agent]
-        SYS[系统日志] --> FLUENT
-        K8S[K8s 日志] --> FLUENT
+    subgraph "Log collection"
+        APP[Application logs] --> FLUENT[Fluentd Agent]
+        SYS[System logs] --> FLUENT
+        K8S[Kubernetes logs] --> FLUENT
         FLUENT --> ES[(Elasticsearch)]
     end
 
-    subgraph "指标采集"
-        NODE[节点指标] --> PROM[Prometheus]
-        POD[Pod 指标] --> PROM
-        LLM_M[LLM 延迟/吞吐] --> PROM
+    subgraph "Metrics"
+        NODE[Node metrics] --> PROM[Prometheus]
+        POD[Pod metrics] --> PROM
+        LLM_M[LLM latency and throughput] --> PROM
     end
 
-    subgraph "可视化 & 告警"
-        ES --> KIBANA[Kibana 日志查询]
-        PROM --> GRAF[Grafana 仪表盘]
+    subgraph "Visualization and alerts"
+        ES --> KIBANA[Kibana log search]
+        PROM --> GRAF[Grafana dashboards]
         PROM --> ALERT[AlertManager]
-        ALERT --> WECHAT[企业微信告警]
-        ALERT --> MAIL[邮件告警]
+        ALERT --> WECHAT[WeCom notification]
+        ALERT --> MAIL[Email notification]
     end
 ```
 
-**关键监控指标**：
+| Metric | Proposed action |
+| --- | --- |
+| P50/P99 inference latency | Alert when P99 exceeds 5 seconds |
+| Token throughput | Alert below 50% of baseline |
+| API QPS | Scale above 70% of capacity |
+| HTTP 5xx rate | Alert above 1% |
+| Database connections and slow queries | Alert above 80% connection utilization |
+| GPU utilization | Alert below 30% or above 95% |
+| Memory or disk usage | Alert above 85% |
+| Daily active users | Alert on a 30% decline |
 
-| 分类 | 指标 | 告警阈值 |
-|------|------|---------|
-| LLM | P50/P99 推理延迟 | P99 > 5s 告警 |
-| LLM | Token 吞吐量 (tokens/s) | 低于基线 50% 告警 |
-| API | QPS | 超过容量 70% 触发扩容 |
-| API | 错误率 5xx | > 1% 告警 |
-| 数据库 | 连接数、慢查询 | 连接 > 80% 告警 |
-| 资源 | GPU 利用率 | < 30% 或 > 95% 告警 |
-| 资源 | 内存 / 磁盘使用率 | > 85% 告警 |
-| 业务 | 客户活跃度 DAU | 下降 30% 告警 |
+## 3. Capacity planning
 
----
+| Layer | Per node | Cluster in the proposal | Theoretical capacity listed in the design |
+| --- | --- | --- | --- |
+| Nginx L4 | 100K connections | Two nodes, active/standby | 200K combined node capacity |
+| Kong | 10K QPS | Five nodes | 50K QPS |
+| Redis | 100K operations/s | Six nodes | 600K operations/s |
+| Kafka | 100K messages/s | Three brokers | 300K messages/s |
+| vLLM | 10 requests/s per GPU | Ten GPUs | 100 requests/s plus buffering |
 
-## 3. 10 万并发技术方案
+Requests pass through Nginx and Kong to autoscaled backend services and a Kafka buffer. When demand exceeds inference capacity, scale on queue depth, show waiting times to lower-priority users, and use a circuit breaker to return a status message if a downstream service fails.
 
-### 3.1 并发路径分析
+## 4. Deployment and recovery
 
-用户请求 → Nginx（10 万连接）→ Kong Gateway（无状态，水平扩展）→ 后端服务（K8s HPA）→ Kafka 缓冲 → LLM 推理集群
-
-### 3.2 各层并发承载能力
-
-| 层级 | 单节点能力 | 集群规模 | 理论峰值 |
-|------|-----------|---------|---------|
-| Nginx L4 | 100K 连接 | 2 节点（主备） | 200K |
-| Kong Gateway | 10K QPS | 5 节点 | 50K QPS |
-| Redis Cluster | 100K ops/s | 6 节点 | 600K ops/s |
-| Kafka | 100K msg/s | 3 broker | 300K msg/s |
-| vLLM GPU | 10 req/s | 10 GPU | 100 req/s 实时 + 缓冲 |
-
-### 3.3 应对突发流量
-
-1. **Kafka 缓冲**：突发请求进入 Kafka 队列，平滑消费
-2. **HPA 自动扩容**：GPU 节点根据 vLLM 队列深度自动扩缩
-3. **降级策略**：超过容量时，非 VIP 用户进入排队等待，展示预估等待时间
-4. **熔断**：下游服务异常时自动熔断，返回友好提示而不崩溃
-
----
-
-## 4. 部署架构
+The proposed production cluster separates GPU, CPU and storage pools. GitLab builds and tests images, then Helm deploys rolling updates. The design places the primary cluster in Beijing, the recovery cluster in Shanghai, and full backups in object storage.
 
 ```mermaid
 graph TB
-    subgraph "生产环境 K8s Cluster"
+    subgraph "Production Kubernetes cluster"
         subgraph "GPU Node Pool"
             GPU1[GPU Node × 4]
             GPU2[vLLM Deployments × 10]
@@ -331,34 +270,26 @@ graph TB
         DEPLOY --> K8S[K8s Rolling Update]
     end
 
-    subgraph "容灾 & 备份"
-        MAIN[主集群: 北京]
-        DR[灾备集群: 上海]
-        MAIN -.->|数据同步| DR
-        BACKUP[定期全量备份 → OSS]
+    subgraph "Disaster recovery and backups"
+        MAIN[Primary cluster in Beijing]
+        DR[Recovery cluster in Shanghai]
+        MAIN -.->|Data replication| DR
+        BACKUP[Scheduled full backups to object storage]
     end
 ```
 
----
+## 5. Monthly cloud budget
 
-## 5. 成本估算
+| Resource | Configuration | Estimated monthly cost |
+| --- | --- | ---: |
+| GPU nodes | Four nodes, eight A10 GPUs each | RMB 32,000 |
+| CPU nodes | Six nodes, 32 cores and 64 GB each | RMB 12,000 |
+| Storage nodes | Three nodes, 2 TB SSD each | RMB 6,000 |
+| Object storage | 10 TB | RMB 2,000 |
+| Network | 100 Mbps BGP | RMB 3,000 |
+| Kubernetes, monitoring and backups | Other costs | RMB 5,000 |
+| Total | | RMB 60,000 |
 
-| 资源 | 规格 | 数量 | 月成本（云） |
-|------|------|------|-------------|
-| GPU 节点 | A10 × 8 | 4 台 | ¥32,000 |
-| CPU 节点 | 32C 64G | 6 台 | ¥12,000 |
-| 存储节点 | SSD 2TB | 3 台 | ¥6,000 |
-| 对象存储 | 10TB | - | ¥2,000 |
-| 网络带宽 | 100Mbps BGP | - | ¥3,000 |
-| 其他（K8s/监控/备份）| - | - | ¥5,000 |
-| **合计** | | | **¥60,000/月** |
+The proposal estimates monthly infrastructure costs of RMB 12,000 per 1,000 monthly active users.
 
-即每 1000 个月活用户的月度基础设施成本约 ¥12,000。
-
----
-
-*本文档使用 Claude (Anthropic) 辅助撰写。提示词：*
-1. "设计一个支持 10 万并发的 LLM 应用系统架构，包含推理引擎、数据处理、负载均衡、消息队列、监控等模块"
-2. "使用 Mermaid 语法绘制系统架构图，涵盖接入层、应用层、LLM 推理层、存储层、监控层"
-3. "计算 10 万并发场景下各层级的资源需求和成本估算"
-4. "设计多租户 SaaS 架构中的数据隔离和计费方案"
+The original document was drafted with Claude (Anthropic). Its prompts requested an architecture for 100,000 concurrent connections, Mermaid diagrams, capacity and cost estimates, and a design for tenant isolation and billing.

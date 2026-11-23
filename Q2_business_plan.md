@@ -1,274 +1,108 @@
-# Q2.1 商业计划书：DataLens AI — 企业数据分析助手
+# DataLens AI business plan
 
-> **产品一句话定义**：DataLens AI 是一个让非技术用户用自然语言直接查询企业数据库、自动生成分析报告和可视化图表的 SaaS 平台。
->
-> **核心逻辑链**：企业数据分析痛点 → 需要高质量训练数据 → Q1 三种数据筛选方法 → 微调领域专用模型 → SaaS 产品交付
+This course proposal explores a subscription analytics assistant for business teams. A sales manager could ask “Which five products generated the most revenue in East China last month?” The proposed service would generate SQL, query the company's database, and return a chart and a written explanation.
 
----
+## 1. Executive summary
 
-## 1. 执行摘要（Summary）
+The intended customers are Chinese small and medium-sized enterprises (SMEs) that use ERP, CRM or financial systems and have limited access to analysts. The proposal assumes a market of more than 52 million SMEs. Three features distinguish the product: a Qwen3.5-0.8B model fine-tuned on 2,000 selected DataMind-12K examples, a natural-language interface for people unfamiliar with SQL or Python, and private deployment within the customer's network.
 
-**创业点子**：DataLens AI 帮助企业中的非技术人员（销售、运营、财务、HR）用日常语言向数据库提问——例如"上个月华东区销售额最高的 5 个产品是什么？"——系统自动将其转化为 SQL 查询、执行并返回分析结果，以自然语言 + 可视化图表呈现。
+The proposed angel round is RMB 5 million. The high-level allocation is 40% for development, 30% for marketing and 30% for staff and operations. The plan targets break-even in month 18.
 
-**目标市场**：中国中小企业（SME）商业智能（BI）市场。中国有超过 5,200 万家中小企业，其中大多数没有数据科学团队，但每天都需要从 ERP/CRM/财务系统中提取数据做决策。
+## 2. Project history
 
-**核心优势**：
-- **领域专用的微调模型**：基于 DataMind-12K 数据集，使用三种筛选方法（复杂度过滤、质量评估、多样性选择）精选 2000 条高质量训练样本，微调 Qwen3.5-0.8B，使模型在企业数据场景下准确率远超通用 LLM
-- **零门槛使用**：自然语言输入，无需 SQL 或 Python 知识
-- **本地/私有部署**：支持私有化部署，数据不出企业内网，满足安全合规要求
+| Milestone | Status in the course project |
+| --- | --- |
+| Study and implement three data selection methods | Completed in Q1.1–Q1.2 |
+| Fine-tune Qwen3.5-0.8B | Completed in Q1.3. Historical run reported a final loss of 0.098 |
+| Build the local conversational demo | Completed in Q1.4 |
+| Develop the MVP | Planned for months 1–6 |
+| Test with early users | Planned for months 7–9 |
+| Launch | Planned for months 10–12 |
 
-**融资需求**：天使轮 500 万元，用于产品开发（40%）、市场推广（30%）、团队建设（30%），预计 18 个月达到盈亏平衡。
+The selection pipeline reduced 11,707 conversations to 2,000 training examples using complexity, quality and diversity. The local demo answers questions about SQL, Python and statistics. The following product, market and financial sections describe the proposal.
 
----
+## 3. Product and services
 
-## 2. 项目进展（History）
+The service would translate questions into SQL, execute queries and aggregate statistics, flag anomalies, and export chart-based HTML or PDF reports. Follow-up questions would allow users to drill down or compare results. Plain-language explanations would cover questions such as “What does a p-value of 0.03 mean?”
 
-| 里程碑 | 状态 |
-|--------|------|
-| DataMind-12K 数据筛选方法研究 | 已完成（Q1.1-Q1.2） |
-| 三种数据筛选方法代码实现与验证 | 已完成（Q1.2） |
-| Qwen3.5-0.8B 模型微调 | 已完成（Q1.3，Loss=0.098） |
-| 数据分析助手 Demo 网站 | 已完成（Q1.4） |
-| MVP 产品开发 | 计划中（第 1-6 月） |
-| 种子用户测试 | 计划中（第 7-9 月） |
-| 正式发布 | 计划中（第 10-12 月） |
+The design draws on *A Survey on Data Selection for Language Models*. Complexity filtering retains multi-table joins, nested queries and window functions. Quality filtering aims to reduce examples with invalid SQL or contradictory reasoning. Diversity selection broadens coverage across finance, sales, operations and HR. The DataMind-12K reasoning format informs the proposed explanations. Private deployment is described in the [architecture](Q2_architecture.md).
 
-**已取得的成果**：
-- 完整的数据筛选管线：复杂样本筛选、低质量数据过滤、多样性去重，将 11,707 条原始数据精选为 2,000 条高质量训练集
-- 微调后的模型在数据分析场景测试中表现良好，能理解和生成 SQL、Python 及统计解释
-- 本地 Web Demo 已部署，支持自然语言交互的数据分析问答
+The proposal identifies three potential competitive advantages: the selection pipeline, the accumulation of domain examples as customers use the product, and connectors to ERP, CRM and finance software.
 
----
+## 4. Customers and competitors
 
-## 3. 产品与服务（Product or Service）
+The original plan uses the following market assumptions: 52 million Chinese SMEs, a Chinese BI market of approximately RMB 12 billion in 2025, global NLP growth of about 25% per year in 2025–2030, and annual growth above 40% in AI-native SaaS. It cites a Gartner forecast that more than 50% of BI queries would begin in natural language by 2028.
 
-### 3.1 产品描述
+| Segment | Use case | Distribution |
+| --- | --- | --- |
+| Online retail | Sales, inventory turnover and repeat purchases | E-commerce SaaS integrations |
+| Financial services | Risk reports, compliance audits and performance | Partners |
+| Manufacturing | Production efficiency, quality and supply chains | Trade shows and direct sales |
+| Restaurant chains | Sales per unit of floor area, foot traffic and costs | Restaurant SaaS integrations |
 
-DataLens AI 是一个 **AI 驱动的企业数据分析助手**，核心能力包括：
+The course comparison describes ThoughtSpot as an established enterprise product with fees above USD 50,000 per year and targets roughly one twentieth of that price. Tableau GPT offers an established BI ecosystem with a higher learning cost. AskYourDatabase focuses on SQL generation. ERNIE Bot and Qwen address general language tasks. In-house development offers control and requires specialist staff. The proposed SME offering emphasizes low prices, guided reporting and a one-day deployment target.
 
-1. **自然语言转 SQL**：用户用自然语言提问，系统自动生成可执行的 SQL 语句
-2. **自动数据分析**：对接企业数据库后，自动执行查询、聚合统计、异常检测
-3. **报表生成**：一键生成带有可视化图表的数据分析报告（HTML/PDF）
-4. **多轮交互分析**：支持追问、钻取、对比等交互式分析
-5. **数据解释**：用通俗语言解释统计指标含义（如"p-value = 0.03 意味着什么"）
+## 5. Pricing and distribution
 
-### 3.2 独特优势
+| Plan | Monthly price | Proposed features |
+| --- | ---: | --- |
+| Starter | RMB 499 | One database, five users, basic analysis |
+| Professional | RMB 1,999 | Five databases, 20 users, advanced reports and export |
+| Enterprise | RMB 4,999 | Unlimited databases, private deployment, SSO and an SLA |
 
-| 优势 | 说明 | 与 Q1 研究的关联 |
-|------|------|-----------------|
-| **高质量训练数据** | 通过 Complexity + Quality + Diversity 三阶段筛选 | Q1.2 实现的数据选择管线 |
-| **领域专用优化** | 针对企业 SQL、多表 JOIN、财务/销售/运营场景微调 | Q1.3 微调训练 |
-| **可解释性** | 模型输出带有推理过程，用户可以理解分析逻辑 | DataMind-12K 的 thinking 格式 |
-| **私有化部署** | 支持本地部署，数据不出企业网络 | 技术架构设计（Q2.2） |
+The proposal compares the RMB 5,988 annual Starter subscription with assumed BI costs of RMB 10,000–50,000 per user per year and analyst salaries of RMB 150,000–300,000 per year. Its illustrative cost comparison puts the subscription at 20% of an analyst's monthly salary.
 
-### 3.3 为什么需要三种数据筛选方法
+Acquisition channels include a 14-day self-service trial, tutorials and case studies, a user community, and integrations with Kingdee, Yonyou, DingTalk and Feishu. Founders would sell to pilot customers, the website would handle smaller subscriptions, and ERP or BI resellers would receive a share of sales.
 
-《A Survey on Data Selection for Language Models》指出：训练数据的质量、难度分布和多样性直接影响 SFT 模型效果。DataLens AI 的核心竞争力之一在于：
+## 6. Operations
 
-- **Complexity Filtering**：我们保留了包含复杂 SQL（多表 JOIN、嵌套子查询、窗口函数）的样本，确保模型能处理真实企业场景中的复杂问题
-- **Quality Filtering**：我们过滤掉 SQL 语法错误、逻辑矛盾的低质量样本——在生产环境中，一个错误的 SQL 可能导致错误的商业决策
-- **Diversity Selection**：我们确保训练数据覆盖财务、销售、运营、HR 等多个业务线，使模型能服务不同行业的客户
+The design combines vLLM and the fine-tuned model for inference, Ray Train and PyTorch for training, PostgreSQL and ClickHouse for storage, Redis for sessions and frequent queries, Kafka for background work, and Nginx and Kong at the gateway. Docker and Kubernetes handle deployment. Prometheus, Grafana and the ELK stack provide monitoring. The architecture targets 100,000 concurrent connections with queued inference.
 
-### 3.4 竞争壁垒
+Quality monitoring would track SQL syntax and execution success, compare model updates on a small share of traffic, and collect feedback on generated answers.
 
-- 技术壁垒：三阶段数据筛选方法是核心 know-how，难以简单复制
-- 数据壁垒：随着客户使用增加，积累的领域数据持续提升模型效果
-- 生态壁垒：与主流 ERP/CRM/财务系统对接的 connector 生态
+## 7. Team and milestones
 
----
+The proposed CEO owns product, fundraising and partnerships. The CTO leads model training, distributed systems and development. The COO handles SaaS operations and customer success. A sales lead would build direct and reseller channels.
 
-## 4. 市场与竞品分析（Market & Competitors）
+| Period | Staffing or business target |
+| --- | --- |
+| Months 1–3 | Founder and two engineers build the MVP |
+| Months 4–6 | Hire three people across frontend, backend and operations |
+| Months 7–12 | Grow to 10–15 staff |
+| Months 13–18 | Grow to 25–30 staff |
+| Month 12 | 50 paying customers and RMB 50,000 monthly recurring revenue |
+| Month 24 | 500+ paying customers and RMB 500,000 monthly recurring revenue |
+| Month 48 | Target annual revenue above RMB 50 million and consider a Series A |
 
-### 4.1 市场规模
+## 8. Financial assumptions and projections
 
-| 维度 | 数据 |
-|------|------|
-| 中国中小企业数量 | 5,200 万家 |
-| 中国 BI 市场规模（2025）| 约 120 亿元人民币 |
-| 全球 NLP 市场 CAGR | 约 25%（2025-2030） |
-| 目标可触达市场 | AI-native SaaS 赛道，年增长 >40% |
+The plan assumes RMB 1,200 in monthly revenue per customer, a 24-month customer lifetime and an 85% gross margin at scale. It models customer acquisition cost falling from RMB 3,000 to RMB 1,500 and monthly churn falling from 5% to 3%.
 
-**市场趋势**：传统 BI 工具（如 Tableau、Power BI）使用门槛高，需要 SQL 或拖拽式建模经验。LLM 驱动的"对话式 BI"正在成为主流趋势——Gartner 预测到 2028 年，超过 50% 的 BI 查询将以自然语言发起。
+All monetary entries in the following table are in **RMB 10,000**.
 
-### 4.2 目标客户细分
+| Metric | Year 1 | Year 2 | Year 3 |
+| --- | ---: | ---: | ---: |
+| Paying customers (count) | 50 | 500 | 2,000 |
+| Revenue | 72 | 720 | 2,880 |
+| Operating costs | 50 | 200 | 500 |
+| Gross profit | 22 | 520 | 2,380 |
+| Personnel | 120 | 300 | 600 |
+| Marketing | 80 | 200 | 400 |
+| Other expenses | 30 | 80 | 150 |
+| Net profit | -208 | -60 | +1,230 |
+| Financing | 500 (angel round) | — | Optional Series A |
 
-| 细分 | 典型需求 | 触达方式 |
-|------|---------|---------|
-| 电商零售 | 销售分析、库存周转、客户复购 | 电商 SaaS 集成 |
-| 金融服务 | 风控报表、合规审计、业绩分析 | 合作伙伴渠道 |
-| 制造业 | 生产效率、质量检测、供应链分析 | 行业展会 + 直销 |
-| 连锁餐饮 | 门店坪效、客流分析、成本控制 | 餐饮 SaaS 集成 |
+The detailed angel budget allocates RMB 2 million (40%) to development, RMB 1.5 million (30%) to marketing, RMB 1 million (20%) to compensation and RMB 500,000 (10%) to operations and other costs.
 
-### 4.3 竞品分析
+## 9. Risks and exit scenarios
 
-| 竞品 | 类型 | 优势 | 劣势 | **我们的差异化** |
-|------|------|------|------|----------------|
-| **ThoughtSpot** | 对话式 BI | 成熟产品，大客户验证 | 年费 \$50K+，不适合 SME | 我们聚焦中小企业，价格是其 1/20 |
-| **Tableau GPT** | 传统 BI + AI | 品牌、生态 | 仍需要学习曲线，价格高 | 我们零门槛 + 更低价格 |
-| **AskYourDatabase** | 独立工具 | SQL 生成准确 | 功能单一，无多轮交互 | 我们提供完整分析报告 |
-| **文心一言/通义千问** | 通用 LLM | 品牌知名度高 | 通用模型不针对数据场景深度优化 | 我们的模型专门针对数据分析微调 |
-| **企业内部自建** | 定制方案 | 完全可控 | 成本高、周期长、缺人才 | 开箱即用，1 天部署 |
+The plan pairs five risks with proposed responses: continued domain specialization as general models improve, a focus on SME customers if major vendors offer free products, private deployment and encryption for data security, employee equity to recruit specialists, and a free entry tier if conversion is weak.
 
-**主要竞争维度**：我们选择的是价格 × 易用性 × 领域专业度 的交叉点——这是大厂和通用工具都难以覆盖的蓝海区间。
+The illustrative investment scenario assumes a 5–10× return by a year-three Series A. Exit possibilities include acquisition by a BI or cloud vendor, a STAR Market or Hong Kong listing if annual revenue exceeds RMB 100 million with sustained profits, or a founder buyback when cash flow permits.
 
----
+## Project methods and attribution
 
-## 5. 市场策略（Reaching the Market）
+The Q1 methods behind the proposal are complexity-based filtering for advanced queries, CLEAR-inspired quality filtering for correctness, and DEITA-inspired diversity selection for domain coverage.
 
-### 5.1 定价策略
+The original course document was drafted with assistance from Claude (Anthropic). Its prompts requested a business plan for an enterprise analytics assistant, a natural-language-to-SQL competitor analysis, an explanation of the Q1 selection methods as a technical advantage, and a three-year SaaS financial model.
 
-| 版本 | 月费 | 功能 |
-|------|------|------|
-| **Starter** | ¥499/月 | 1 个数据库连接，5 个用户，基础分析 |
-| **Professional** | ¥1,999/月 | 5 个数据库，20 个用户，高级报表 + 导出 |
-| **Enterprise** | ¥4,999/月 | 无限数据库，私有化部署，SSO，SLA 保障 |
-
-**定价依据**：
-- 传统 BI 工具（Tableau、Power BI）年费 ¥10,000-50,000/用户
-- 雇佣一个数据分析师年薪 ¥150,000-300,000
-- DataLens AI 年费 ¥5,988 (Starter)，相当于一个分析师月薪的 20%
-
-### 5.2 推广策略
-
-1. **产品驱动增长（PLG）**：提供 14 天免费试用，用户自助注册，体验即转化
-2. **内容营销**：发布"自然语言数据分析"系列教程、案例研究，建立行业影响力
-3. **合作伙伴**：与 ERP 厂商（金蝶、用友）、SaaS 平台（钉钉、飞书）对接集成
-4. **社区运营**：建立数据分析 AI 用户社区，UGC 内容带动口碑传播
-
-### 5.3 销售渠道
-
-- **直销**：初期创始人团队直接对接种子客户，快速迭代
-- **线上渠道**：官网自助注册 + 付费转化，低客单价走纯在线交易
-- **渠道合作**：与 ERP/BI 代理商合作分成，覆盖中小企业集群
-
----
-
-## 6. 运营与技术（Production & Operations）
-
-### 6.1 技术栈
-
-| 层级 | 技术选型 | 说明 |
-|------|---------|------|
-| LLM 引擎 | vLLM + Qwen3.5-0.8B (fine-tuned) | 高吞吐推理，支持 10 万并发 |
-| 模型训练 | Ray Train + PyTorch | 分布式微调，Q1 已验证 |
-| 数据库 | PostgreSQL + ClickHouse | 事务 + 分析双引擎 |
-| 缓存 | Redis Cluster | 高频查询缓存、会话管理 |
-| 消息队列 | Kafka | 异步任务、日志流水 |
-| 网关 | Nginx + Kong | 负载均衡、API 网关 |
-| 容器 | Kubernetes + Docker | 弹性伸缩、灰度发布 |
-| 监控 | Prometheus + Grafana + ELK | 性能监控、日志分析、告警 |
-
-详细架构设计见 [Q2_architecture.md](Q2_architecture.md)。
-
-### 6.2 质量保障
-
-- **模型效果监控**：定期评估生成 SQL 的执行成功率、语法正确率
-- **A/B 测试**：模型更新前进行小流量对比测试
-- **用户反馈循环**：收集用户对生成结果的点赞/踩，持续优化模型
-
----
-
-## 7. 管理团队（Management）
-
-### 7.1 核心团队
-
-| 角色 | 职责 | 要求 |
-|------|------|------|
-| CEO / 创始人 | 产品方向、融资、战略合作 | 数据科学背景，懂技术也懂商业 |
-| CTO | 技术架构、模型训练、产品开发 | 大模型微调经验，分布式系统 |
-| COO | 运营、客户成功、市场推广 | SaaS 运营经验，数据分析行业 |
-| 销售负责人 | 直销 + 渠道建设 | B2B SaaS 销售背景 |
-
-### 7.2 团队建设里程碑
-
-| 时间 | 里程碑 |
-|------|--------|
-| 第 1-3 月 | 创始人 + 2 名工程师完成 MVP |
-| 第 4-6 月 | 招聘 3 人（前端 + 后端 + 运营） |
-| 第 7-12 月 | 团队扩展至 10-15 人 |
-| 第 13-18 月 | 团队扩展至 25-30 人 |
-
-### 7.3 发展目标
-
-- **短期（12 个月）**：获取 50 个付费客户，MRR ¥50,000
-- **中期（24 个月）**：付费客户 500+，MRR ¥500,000
-- **长期（48 个月）**：市场领导者，年收入 ¥5,000 万+，考虑 A 轮融资
-
----
-
-## 8. 财务预测（Finance）
-
-### 8.1 关键假设
-
-| 指标 | 假设 |
-|------|------|
-| 平均客单价 | ¥1,200/月 |
-| 客户获取成本（CAC）| ¥3,000（初期），¥1,500（规模期） |
-| 客户生命周期 | 24 个月 |
-| 月流失率 | 5%（初期），3%（规模期） |
-| 毛利率 | 85%（SaaS 模式，边际成本低） |
-
-### 8.2 三年财务预测（万元）
-
-| 年份 | Year 1 | Year 2 | Year 3 |
-|------|--------|--------|--------|
-| 付费客户数 | 50 | 500 | 2,000 |
-| 年收入 | 72 | 720 | 2,880 |
-| 营业成本 | 50 | 200 | 500 |
-| 毛利 | 22 | 520 | 2,380 |
-| 人员成本 | 120 | 300 | 600 |
-| 营销费用 | 80 | 200 | 400 |
-| 其他费用 | 30 | 80 | 150 |
-| **净利润** | **-208** | **-60** | **+1,230** |
-| 累计现金流需求 | 500 万（天使轮） | - | A 轮（可选） |
-
-### 8.3 资金用途（天使轮 500 万元）
-
-| 用途 | 金额 | 占比 |
-|------|------|------|
-| 产品研发 | 200 万 | 40% |
-| 市场推广 | 150 万 | 30% |
-| 团队薪酬 | 100 万 | 20% |
-| 运营及其他 | 50 万 | 10% |
-
----
-
-## 9. 风险与退出策略（Risk, Return & Exit）
-
-### 9.1 主要风险
-
-| 风险 | 描述 | 应对措施 |
-|------|------|---------|
-| **技术风险** | 通用 LLM 能力快速提升，可能覆盖我们的差异化功能 | 深耕垂直场景数据，持续积累领域壁垒 |
-| **市场风险** | 大厂（阿里、字节）推出免费竞品 | 聚焦 SME 细分市场，大厂服务成本高 |
-| **数据安全** | 企业担心数据上云 | 支持私有化部署 + 数据加密 |
-| **人才风险** | AI 人才竞争激烈 | 早期核心员工给予股权激励 |
-| **商业化风险** | SME 付费意愿低于预期 | 提供免费版引流，低门槛转化 |
-
-### 9.2 投资回报与退出
-
-- **预期回报**：天使轮投资者在 A 轮（第 3 年）可获 5-10x 回报
-- **退出路径**：
-  1. **战略收购**：被 BI 厂商（如 Tableau/Salesforce）或云厂商（阿里云/腾讯云）收购
-  2. **IPO**：若达到年收入 1 亿+ 且持续盈利，考虑科创板或港股上市
-  3. **创始人回购**：在现金流充裕时回购早期投资者股份
-
----
-
-## 附：Q1 数据筛选方法与本创业计划的关联
-
-| Q1 数据选择方法 | 创业中的对应价值 |
-|----------------|----------------|
-| **Complexity-based Filtering** | 确保训练数据包含复杂企业场景（多表 JOIN、嵌套子查询），使模型能处理真实商业问题 |
-| **Quality-based Filtering (CLEAR)** | 过滤 SQL 语法错误和逻辑矛盾的样本，确保生产环境可靠性 |
-| **DEITA Diversity Selection** | 覆盖财务、销售、运营、HR 等多业务线，使产品适用于不同行业客户 |
-
-**一句话总结**：Q1 的数据筛选不是随机行为，而是为构建企业级数据分析助手而设计的针对性数据策略。
-
----
-
-*本文档使用 Claude (Anthropic) 辅助撰写。所有提示词如下：*
-1. "根据以下商业计划框架，为'企业数据分析助手'LLM 创业项目撰写完整的商业计划书"
-2. "分析'自然语言转 SQL'这一赛道的市场格局和竞品情况"
-3. "结合 Q1 项目中的数据选择方法（Complexity/Quality/Diversity），阐述创业产品的技术壁垒"
-4. "生成 SaaS 创业公司三年财务预测模型"
