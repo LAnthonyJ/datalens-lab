@@ -8,9 +8,9 @@ Can a 0.8B-parameter model write a SQL query and recognize when a question is mi
 
 ## Inside the demo
 
-![Local Gradio conversation showing the generated SQLite query to count all rows in the sales table.](docs/media/gradio-session.png)
+![A user asks what COUNT(*) tells them about a table. DataLens shows a SQL query and explains how counting rows differs from counting distinct values.](docs/media/gradio-session.png)
 
-The model generated `SELECT COUNT(*) FROM sales;` in this session. The browser test copied the displayed query into SQLite and got **3** for a three-row fixture. Try the two English starters in the demo, or enter a question of your own.
+The assistant explains row counts with a SQL example. In SQLite, a column containing `10, 10, 20, NULL` gives **4** for `COUNT(*)` and **2** for `COUNT(DISTINCT value)`.
 
 | Try asking | What to look for |
 | --- | --- |
