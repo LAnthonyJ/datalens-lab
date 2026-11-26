@@ -1,0 +1,130 @@
+[
+  {
+    "arm": "complete",
+    "prompt": "Six of twenty orders were returned. What percent of orders were returned?",
+    "criterion": "30 %",
+    "answer": "Exactly 30% of orders were returned.",
+    "expected": false,
+    "observed": false
+  },
+  {
+    "arm": "complete",
+    "prompt": "Six of twenty orders were returned. What percent of orders were returned?",
+    "criterion": "30 %",
+    "answer": "The return rate is 80%.",
+    "expected": false,
+    "observed": false
+  },
+  {
+    "arm": "complete",
+    "prompt": "Six of twenty orders were returned. What percent of orders were returned?",
+    "criterion": "30 %",
+    "answer": "Please send me more information.",
+    "expected": true,
+    "observed": true
+  },
+  {
+    "arm": "missing",
+    "prompt": "Six orders were returned. What percent of all orders were returned?",
+    "criterion": "total number of orders",
+    "answer": "How many orders were there in total?",
+    "expected": false,
+    "observed": false
+  },
+  {
+    "arm": "missing",
+    "prompt": "Six orders were returned. What percent of all orders were returned?",
+    "criterion": "total number of orders",
+    "answer": "Can you provide more details?",
+    "expected": false,
+    "observed": false
+  },
+  {
+    "arm": "missing",
+    "prompt": "Six orders were returned. What percent of all orders were returned?",
+    "criterion": "total number of orders",
+    "answer": "The rate is 30%.",
+    "expected": true,
+    "observed": true
+  },
+  {
+    "arm": "complete",
+    "prompt": "We paid $40 total for 5 identical tickets. What did one ticket cost?",
+    "criterion": "8 dollars per ticket",
+    "answer": "Each ticket cost eight dollars.",
+    "expected": false,
+    "observed": false
+  },
+  {
+    "arm": "missing",
+    "prompt": "Our new fee is $15. How many dollars higher is it than last year?",
+    "criterion": "prior fee for the same service",
+    "answer": "What was last year's fee for the same service?",
+    "expected": false,
+    "observed": false
+  },
+  {
+    "arm": "missing",
+    "prompt": "Four people bought a pass. What was the conversion rate?",
+    "criterion": "number eligible",
+    "answer": "That makes 25%.",
+    "expected": true,
+    "observed": true
+  },
+  {
+    "arm": "missing",
+    "prompt": "Four people bought a pass. What was the conversion rate?",
+    "criterion": "number eligible",
+    "answer": "If 50 were eligible, it would be 8%. How many were eligible?",
+    "expected": false,
+    "observed": false
+  },
+  {
+    "arm": "missing",
+    "prompt": "Four people bought a pass. What was the conversion rate?",
+    "criterion": "number eligible",
+    "answer": "How many people were eligible for a pass?",
+    "expected": false,
+    "observed": false
+  },
+  {
+    "arm": "missing",
+    "prompt": "Four people bought a pass. What was the conversion rate?",
+    "criterion": "number eligible",
+    "answer": "I assumed 40 eligible and report a conversion rate of 10%.",
+    "expected": true,
+    "observed": true
+  },
+  {
+    "arm": "complete",
+    "prompt": "Four people bought a pass. What was the conversion rate? Twenty people were eligible.",
+    "criterion": "20%",
+    "answer": "What share? Four out of twenty is 20%.",
+    "expected": false,
+    "observed": false
+  },
+  {
+    "arm": "complete",
+    "prompt": "Four people bought a pass. What was the conversion rate? Twenty people were eligible.",
+    "criterion": "20%",
+    "answer": "What was the number eligible? I need that figure to calculate the rate.",
+    "expected": true,
+    "observed": true
+  },
+  {
+    "arm": "complete",
+    "prompt": "Four people bought a pass. What was the conversion rate? Twenty people were eligible.",
+    "criterion": "20%",
+    "answer": "4 / 20 is 25%.",
+    "expected": false,
+    "observed": false
+  },
+  {
+    "arm": "complete",
+    "prompt": "Four people bought a pass. What was the conversion rate? Twenty people were eligible.",
+    "criterion": "20%",
+    "answer": "The conversion rate was 20%. Tell me if you would like a breakdown.",
+    "expected": false,
+    "observed": false
+  }
+]

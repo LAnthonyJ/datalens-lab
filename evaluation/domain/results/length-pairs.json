@@ -1,0 +1,18 @@
+{
+  "base": {
+    "items": 100,
+    "raw_prefix_matches": 100,
+    "passed_at_128": 6,
+    "passed_at_512": 9,
+    "fixed_by_longer_budget": 4,
+    "regressed_on_longer_budget": 1
+  },
+  "lora": {
+    "items": 100,
+    "raw_prefix_matches": 100,
+    "passed_at_128": 22,
+    "passed_at_512": 22,
+    "fixed_by_longer_budget": 0,
+    "regressed_on_longer_budget": 0
+  }
+}

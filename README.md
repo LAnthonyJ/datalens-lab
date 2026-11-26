@@ -8,11 +8,29 @@ Can a 0.8B-parameter model write a SQL query and recognize when a question is mi
 
 ## Checkpoint comparison
 
-On **480 business SQL questions across 80 schemas**, the raw Qwen3.5-0.8B returned the right result on all three database fixtures for **29 questions (6.0%)**. The final LoRA candidate passed **88 (18.3%)**. The paired gain was **12.3 percentage points** (97.5% interval, +8.8 to +16.0). The improvement met the registered ten-point threshold. [Paired query results](evaluation/domain/results/confirm-b-grades.csv)
+**With 128 output tokens, domain fine-tuning raised correct business SQL from 29/480 to 88/480.** Each answer had to return the correct rows on three SQLite fixtures. Of the 480 paired questions, 77 improved and 18 regressed. The gain met the registered ten-point threshold and the confidence interval excluded zero.
 
-The clearest gains were in filters (8 → 44 passes out of 80) and date boundaries (0 → 27). Joins fell from 15 to 6, and neither checkpoint solved the zero-record counting tasks. Under the shared 128-token budget, raw Qwen returned executable SQL on 71 questions and LoRA on 209. Where both queries executed, raw Qwen answered 19 of 45 correctly and LoRA answered 23. [Execution diagnostic](evaluation/domain/results/sql-execution-diagnostic.json)
+![Business SQL improved from 29 to 88 passes and Spider dev from 53 to 208. Business decisions improved from zero to one.](docs/media/domain-evaluation.png)
 
-On the separate **Spider development benchmark**, raw Qwen passed **53/1,034** and LoRA **208/1,034**. The baseline reached the response limit on 1,031 questions; the candidate reached it on zero. The business-decision endpoint uses 400 separate pairs and independent masked AI review. [Spider answers](evaluation/domain/results/spider-answers.jsonl) · [Protocol and reproduction guide](evaluation/domain/README.md) · [Checkpoint provenance](evaluation/domain/CHECKPOINTS.md)
+| English task | Raw Qwen3.5-0.8B | Final LoRA | Gain in pp [97.5% CI] |
+| --- | ---: | ---: | ---: |
+| Business SQL · all three fixtures correct | 29/480 | 88/480 | +12.29 [+8.75, +16.04] |
+| Spider dev · official execution test suite | 53/1034 | 208/1034 | +14.99 [+10.73, +20.03] |
+| Business decisions · both versions correct | 0/400 | 1/400 | +0.25 [+0.00, +1.00] |
+
+**Where SQL improved.** Filters went from 8 to 44 passes out of 80 and date-boundary questions from 0 to 27. Joins fell from 15 to 6. Both models scored 0/80 when the result had to retain groups with zero matches. The candidate returned executable SQL on 209 questions, compared with 71 for raw Qwen. Among the 45 on which both queries ran, the correct counts were 23 and 19, respectively.
+
+**One query, before and after tuning.** The first SQL question by ID on which the candidate improved asked how many different winning pilots appeared at one location. Raw Qwen introduced an extra join and a malformed column reference. The tuned model returned the following query, which passed all three fixtures. [See both original answers](evaluation/domain/RESULTS.md#examples-selected-by-id)
+
+```sql
+SELECT COUNT(DISTINCT winning_pilot) FROM match WHERE location='v1';
+```
+
+**What happened when data were missing.** To pass a business pair, the model had to request the withheld input and then solve the complete version in a fresh chat. Raw Qwen passed 0/400 pairs and the candidate passed 1/400. This endpoint did not meet the registered improvement threshold.
+
+**How much the answer budget mattered.** On business SQL, raw Qwen reached the 128-token cap on 480/480 answers and the candidate on 1/480. A complete query could still pass if the explanation after it was cut short. On full Spider dev, the cap affected 1,031/1,034 raw answers and 0/1,034 tuned answers. On the same 100-question Spider sample, increasing the budget from 128 to 512 raised raw Qwen from 6 to 9 correct. The candidate scored 22/100 at both budgets.
+
+The final candidate includes both English adaptation stages. Only the raw and final weight files could be verified for these new tests. The Gradio demo still uses its documented demo checkpoint. [Read the results, examples and regressions](evaluation/domain/RESULTS.md) · [Replay the scores](evaluation/domain/README.md) · [Inspect the checkpoint provenance](evaluation/domain/CHECKPOINTS.md)
 
 <details>
 <summary>Historical regression check · 20 missing-data questions</summary>

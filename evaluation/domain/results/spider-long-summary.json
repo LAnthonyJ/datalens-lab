@@ -1,0 +1,30 @@
+{
+  "items": 100,
+  "clusters": 20,
+  "base": 9,
+  "lora": 22,
+  "delta_pp": 13.0,
+  "ci97_5_pp": [
+    3.0303030303030303,
+    22.22222222222222
+  ],
+  "improved": 18,
+  "regressed": 5,
+  "generation": {
+    "base": {
+      "ok": 91,
+      "length": 9
+    },
+    "lora": {
+      "ok": 100
+    }
+  },
+  "first_gain": "spider-0144",
+  "regression_ids": [
+    "spider-0254",
+    "spider-0309",
+    "spider-0355",
+    "spider-0387",
+    "spider-0425"
+  ]
+}

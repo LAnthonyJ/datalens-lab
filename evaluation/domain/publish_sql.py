@@ -9,8 +9,8 @@ import numpy as np
 def read(p):return json.loads(p.read_text(encoding='utf8'))
 
 def publish(work,out,task):
-    if task in ('spider','long'):
-        name,count=('spider',1034) if task=='spider' else ('spider-long',100)
+    if task in ('spider','long','short'):
+        name,count={'spider':('spider',1034),'long':('spider-long',100),'short':('spider-short',100)}[task]
         by_model={m:{r['id']:r for p in (work/f'{name}-{m}-grades').glob('*.json') for r in [read(p)]} for m in ('base','lora')}
     else:
         count=480;name='confirm-b'
@@ -53,5 +53,5 @@ def publish(work,out,task):
     (out/(name+'-summary.json')).write_text(json.dumps(result,indent=2),encoding='utf8')
     print({k:v for k,v in result.items() if k!='regression_ids'})
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('work',type=Path);p.add_argument('out',type=Path);p.add_argument('task',choices=['spider','sql','long'])
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('work',type=Path);p.add_argument('out',type=Path);p.add_argument('task',choices=['spider','sql','long','short'])
     a=p.parse_args();a.out.mkdir(exist_ok=True,parents=True);publish(a.work,a.out,a.task)

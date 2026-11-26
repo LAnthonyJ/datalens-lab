@@ -1,0 +1,76 @@
+{
+  "items": 400,
+  "clusters": 400,
+  "base": 0,
+  "lora": 1,
+  "delta_pp": 0.25,
+  "ci97_5_pp": [
+    0.0,
+    1.0
+  ],
+  "improved": 1,
+  "regressed": 0,
+  "meets_threshold": false,
+  "cluster_sd": 0.05,
+  "agree": 1536,
+  "rated": 1600,
+  "kappa": 0.43864573283045316,
+  "categories": {
+    "change": {
+      "base": 0,
+      "lora": 0
+    },
+    "coverage": {
+      "base": 0,
+      "lora": 0
+    },
+    "distribution": {
+      "base": 0,
+      "lora": 0
+    },
+    "duration": {
+      "base": 0,
+      "lora": 1
+    },
+    "finance": {
+      "base": 0,
+      "lora": 0
+    },
+    "rank": {
+      "base": 0,
+      "lora": 0
+    },
+    "rate": {
+      "base": 0,
+      "lora": 0
+    },
+    "weighted": {
+      "base": 0,
+      "lora": 0
+    }
+  },
+  "arm_pass": {
+    "base": {
+      "missing": 13,
+      "complete": 0
+    },
+    "lora": {
+      "missing": 11,
+      "complete": 18
+    }
+  },
+  "issues": {
+    "lora/missing/unsupported-number": 383,
+    "base/missing/unsupported-number": 399,
+    "base/complete/unnecessary-data-request": 360,
+    "lora/complete/unnecessary-data-request": 20
+  },
+  "generation": {
+    "lora/ok": 797,
+    "base/length": 780,
+    "base/ok": 20,
+    "lora/length": 3
+  },
+  "first_gain": "a-formal-019",
+  "regression_ids": []
+}

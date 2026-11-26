@@ -1,0 +1,47 @@
+{
+  "reviewer1": {
+    "items": 400,
+    "clusters": 400,
+    "base": 0,
+    "lora": 1,
+    "delta_pp": 0.25,
+    "ci97_5_pp": [
+      0.0,
+      1.0
+    ],
+    "improved": 1,
+    "regressed": 0,
+    "meets_threshold": false,
+    "cluster_sd": 0.05
+  },
+  "reviewer2": {
+    "items": 400,
+    "clusters": 400,
+    "base": 1,
+    "lora": 3,
+    "delta_pp": 0.5,
+    "ci97_5_pp": [
+      -0.5,
+      1.7500000000000002
+    ],
+    "improved": 3,
+    "regressed": 1,
+    "meets_threshold": false,
+    "cluster_sd": 0.1
+  },
+  "passed": {
+    "items": 400,
+    "clusters": 400,
+    "base": 0,
+    "lora": 1,
+    "delta_pp": 0.25,
+    "ci97_5_pp": [
+      0.0,
+      1.0
+    ],
+    "improved": 1,
+    "regressed": 0,
+    "meets_threshold": false,
+    "cluster_sd": 0.05
+  }
+}

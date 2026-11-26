@@ -1,0 +1,242 @@
+[
+  {
+    "token": "0d1f909a33bd",
+    "arm": "missing",
+    "expected_issue": true,
+    "model_issue": true
+  },
+  {
+    "token": "3c6ad01fc377",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": true
+  },
+  {
+    "token": "a9e8f96aea81",
+    "arm": "missing",
+    "expected_issue": true,
+    "model_issue": true
+  },
+  {
+    "token": "367130f7e928",
+    "arm": "missing",
+    "expected_issue": true,
+    "model_issue": true
+  },
+  {
+    "token": "97f6a56bf52f",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": true
+  },
+  {
+    "token": "015f0705a8ad",
+    "arm": "missing",
+    "expected_issue": false,
+    "model_issue": true
+  },
+  {
+    "token": "8d67d9addd4f",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": false
+  },
+  {
+    "token": "ae9a2f78a61e",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": true
+  },
+  {
+    "token": "d7d65153fa1d",
+    "arm": "missing",
+    "expected_issue": true,
+    "model_issue": true
+  },
+  {
+    "token": "b8b18f51d85c",
+    "arm": "missing",
+    "expected_issue": false,
+    "model_issue": true
+  },
+  {
+    "token": "2a7c938710bb",
+    "arm": "missing",
+    "expected_issue": false,
+    "model_issue": false
+  },
+  {
+    "token": "857c2d792335",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": false
+  },
+  {
+    "token": "ffa88c9e0e23",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": true
+  },
+  {
+    "token": "01568921e166",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": false
+  },
+  {
+    "token": "05368f125e88",
+    "arm": "missing",
+    "expected_issue": true,
+    "model_issue": true
+  },
+  {
+    "token": "1cbab51207a6",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": true
+  },
+  {
+    "token": "cd47aa10f714",
+    "arm": "missing",
+    "expected_issue": true,
+    "model_issue": true
+  },
+  {
+    "token": "5f65fbc0fcbc",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": true
+  },
+  {
+    "token": "f7dc2d084b64",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": false
+  },
+  {
+    "token": "fcf1d1afb9c4",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": false
+  },
+  {
+    "token": "950b47c5c9db",
+    "arm": "missing",
+    "expected_issue": true,
+    "model_issue": true
+  },
+  {
+    "token": "02d827afdd42",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": true
+  },
+  {
+    "token": "9e732dba464a",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": false
+  },
+  {
+    "token": "7e0a80d20634",
+    "arm": "missing",
+    "expected_issue": true,
+    "model_issue": true
+  },
+  {
+    "token": "46f7a6060fe2",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": true
+  },
+  {
+    "token": "bfb10025a4d6",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": false
+  },
+  {
+    "token": "baf86616932e",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": false
+  },
+  {
+    "token": "bfd82c8a4efe",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": true
+  },
+  {
+    "token": "b98ed294b5f2",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": false
+  },
+  {
+    "token": "9f6081e7a862",
+    "arm": "missing",
+    "expected_issue": true,
+    "model_issue": true
+  },
+  {
+    "token": "d76788fe8f43",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": true
+  },
+  {
+    "token": "87ff91af9ddf",
+    "arm": "missing",
+    "expected_issue": false,
+    "model_issue": true
+  },
+  {
+    "token": "1ae74b10a722",
+    "arm": "missing",
+    "expected_issue": true,
+    "model_issue": true
+  },
+  {
+    "token": "4ccd1eadd346",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": false
+  },
+  {
+    "token": "d1abd4dcd7e7",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": true
+  },
+  {
+    "token": "98095606975c",
+    "arm": "missing",
+    "expected_issue": true,
+    "model_issue": true
+  },
+  {
+    "token": "6b5140095765",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": false
+  },
+  {
+    "token": "050da05bad6d",
+    "arm": "missing",
+    "expected_issue": true,
+    "model_issue": true
+  },
+  {
+    "token": "33daeb2e32ed",
+    "arm": "complete",
+    "expected_issue": false,
+    "model_issue": true
+  },
+  {
+    "token": "4ccab8c118e2",
+    "arm": "missing",
+    "expected_issue": true,
+    "model_issue": true
+  }
+]

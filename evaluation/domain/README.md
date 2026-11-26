@@ -2,6 +2,17 @@
 
 Read the [frozen scoring protocol](PROTOCOL.md), [original manifest](freeze.json) and [SQL amendment](sql-amendment.json). The SQL amendment records the replacement of 180 overlapping query structures before SQL inference. The distributed [business cases](confirm-a.tsv) and [SQL fixtures](confirm-db.json) contain the final prompts, targets and source identifiers.
 
+### Check the released answers without model weights
+
+Run the following commands from this directory with Python and NumPy. The SQL replay executes all 960 saved model answers against the three fixtures and verifies every flag. The business replay recomputes the paired score and confidence interval from the published adjudicated answers.
+
+```sh
+python replay.py sql
+python replay.py business
+```
+
+For a fresh Spider score from the saved model outputs, run `python replay.py export-spider --out work/spider-replay` and pass its `base` and `lora` folders to the official-scoring command below. Use `export-long` for the 100-question length diagnostic.
+
 ### Data and model preparation
 
 Use Python 3.11 or newer. The inference receipts record PyTorch 2.7.1+cu118, Transformers 5.9.0, bfloat16 and a batch of four. The statistics code needs NumPy. The official SQL scorer needs tqdm and sqlparse 0.5.3. Preparing Spider from its archive also needs PyArrow. Keep the base model directory and the LoRA merged state dict outside version control. The precise weight hashes are in the protocol.
@@ -45,4 +56,11 @@ python calibrated_review.py --packet work/formal-blind/packet.jsonl --out work/f
 python paired.py business work/formal-blind/key.jsonl work/formal-blind/adjudicated.jsonl --expected 400
 ```
 
-For the exploratory length diagnostic, `length_sample.py work` selects 100 dev question IDs by hashing. It takes up to five from each database, then fills any vacancies by the same hash order. Use `long_infer.py` with the same arguments as `infer.py` and the `spider-long` input and output directories. Run the official scorer on those outputs. This post hoc sensitivity check addresses the high baseline truncation rate; the primary thresholds and questions were already fixed.
+The published second review used the calibrated GPU configuration on all 1,600 answers. With the same Ollama model served locally, set `DATALENS_REVIEW_PORT` to its port and run the commands below. The first command assigns a pass or fail. The second independently flags possible unsupported numbers and unnecessary data requests. The released adjudications also include the first reviewer's vote and a reason for the final decision. [Review procedure and agreement](REVIEW.md)
+
+```sh
+python gpu_review.py verdict work/formal-blind/packet.jsonl work/formal-blind/gpu-review
+python gpu_review.py issue work/formal-blind/packet.jsonl work/formal-blind/issues
+```
+
+For the exploratory length diagnostic, `length_sample.py work` selects 100 dev question IDs by hashing. It takes up to five from each database, then fills any vacancies by the same hash order. Use `long_infer.py` with the same arguments as `infer.py` and the `spider-long` input and output directories. Also run `infer.py` on the same 100 input IDs with identical four-question batches, writing to `spider-short-base` and `spider-short-lora`. Run the official scorer on both budgets. The released [inference receipts](results/inference-receipts.json) include each input digest and the time of the first and last saved answer. This post hoc sensitivity check addresses the high baseline truncation rate. The primary questions and thresholds were fixed before the run. To verify all six regenerated input files by content across operating systems, run `python verify_inputs.py work`.
