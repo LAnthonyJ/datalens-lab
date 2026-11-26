@@ -6,20 +6,41 @@ Can a 0.8B-parameter model write a SQL query and recognize when a question is mi
 
 [Watch the walkthrough (8:53)](12311701_张航源.mp4) · [Read the experiment report](12311701_张航源.pdf) · [Open the training notebook](raytrain.ipynb) · [Run the demo](#run-the-demo-on-windows)
 
-## Inside the demo
+## What improved after fine-tuning
 
-![A user asks what COUNT(*) tells them about a table. DataLens shows a SQL query and explains how counting rows differs from counting distinct values.](docs/media/gradio-session.png)
+**On 20 held-out English questions with missing data, a second round of domain fine-tuning with LoRA raised the pass rate from 50% to 75%.** The baseline was the checkpoint after the first round of English domain training. To pass, the assistant had to ask for the specific information needed to answer. Both checkpoints saw the same prompts and were graded against the same criteria with model identities hidden.
 
-The assistant explains row counts with a SQL example. In SQLite, a column containing `10, 10, 20, NULL` gives **4** for `COUNT(*)` and **2** for `COUNT(DISTINCT value)`.
+![Paired results for 20 missing-data questions. The starting checkpoint passed 10 and the LoRA checkpoint passed 15. Six answers improved and one regressed.](docs/media/clarification-results.png)
 
-| Try asking | What to look for |
-| --- | --- |
-| `Given customers(id) and orders(id, customer_id), count orders per customer, including customers with zero orders.` | Does the query keep every customer and return zero for an unmatched order? |
-| `Seven packages arrived damaged. What percentage of shipments arrived damaged?` | Does the assistant ask for the total number of shipments before calculating a percentage? |
+> **Question** · What share of our returned packages arrived damaged?
+>
+> **Before** · Could you share dated broken records of the count, and I can use those to answer; otherwise I cannot.
+>
+> **After LoRA** · Please share the return count and number of damaged returns, along with the definition of a damaged return.
 
-## What the experiments found
+The rate needs two counts from the same group of returns. The baseline asked for records without identifying both counts. The tuned answer named the numerator and denominator.
 
-The original training run used an effective batch size of 16 and reported a final training loss of 0.098 after 125 steps. A follow-up experiment tested answer quality directly. Starting from the same weights, full fine-tuning and LoRA each used 600 English examples. The comparison below shows **passes on fresh English prompts** held back from model selection.
+<details>
+<summary>Checkpoints, scoring and all 44 confirmation questions</summary>
+
+Starting from the merged first-round weights, we trained a rank-16 LoRA adapter on 600 English examples for 38 updates. Its learning rate of 5e-5 was selected on a separate development set. The English confirmation set was fixed before reviewing the answers. This comparison uses one training seed.
+
+| Task | Starting checkpoint | After LoRA |
+| --- | ---: | ---: |
+| Ask for missing information | 10/20 | 15/20 |
+| Generate SQL with the correct result | 5/20 | 7/20 |
+| Calculate with all data supplied | 1/4 | 3/4 |
+
+SQL had to match the reference result on two SQLite fixtures. The other answers were scored against predefined criteria. The missing-data result covers single-turn clarification. In the 20 paired answers, six changed from fail to pass and one from pass to fail. The local demo uses the original demo checkpoint.
+
+[Inspect the 44 paired prompts, reference criteria, answers and grades](docs/english-confirmation.csv)
+
+</details>
+
+<details>
+<summary>Full fine-tuning vs. LoRA on 24 additional English questions</summary>
+
+The original training run used an effective batch size of 16 and reported a final training loss of 0.098 after 125 steps. A follow-up experiment tested answer quality directly. Starting from the same weights, full fine-tuning and LoRA each used 600 English examples. The table shows passes on a later set of 24 English prompts held back from model selection.
 
 | Fine-tuning method | Learning rate | SQL queries | Ask for missing data | Answer when data is sufficient |
 | --- | --- | ---: | ---: | ---: |
@@ -31,6 +52,19 @@ The original training run used an effective batch size of 16 and reported a fina
 The schedule warmed up for four updates and decayed over 34, matching each method’s fixed learning rate on average. With full fine-tuning, it gained one SQL pass but lost four clarification passes. LoRA used 7.10 GiB of peak tensor memory during the scheduled run, compared with 15.81 GiB for full fine-tuning.
 
 SQL was scored by executing queries against two SQLite fixtures. Clarifications and direct answers were reviewed against predefined criteria with model names hidden. These 24 prompts and one training seed support a narrow comparison. The demo still uses its original checkpoint.
+
+</details>
+
+## Inside the demo
+
+![A user asks what COUNT(*) tells them about a table. DataLens shows a SQL query and explains how counting rows differs from counting distinct values.](docs/media/gradio-session.png)
+
+The assistant explains row counts with a SQL example. In SQLite, a column containing `10, 10, 20, NULL` gives **4** for `COUNT(*)` and **2** for `COUNT(DISTINCT value)`.
+
+| Try asking | What to look for |
+| --- | --- |
+| `Given customers(id) and orders(id, customer_id), count orders per customer, including customers with zero orders.` | Does the query keep every customer and return zero for an unmatched order? |
+| `Seven packages arrived damaged. What percentage of shipments arrived damaged?` | Does the assistant ask for the total number of shipments before calculating a percentage? |
 
 ## Run the demo on Windows
 
