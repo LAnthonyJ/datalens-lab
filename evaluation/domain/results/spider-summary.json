@@ -1,0 +1,50 @@
+{
+  "items": 1034,
+  "clusters": 20,
+  "base": 53,
+  "lora": 208,
+  "delta_pp": 14.990328820116055,
+  "ci97_5_pp": [
+    10.729541819604414,
+    20.034847032816298
+  ],
+  "improved": 180,
+  "regressed": 25,
+  "generation": {
+    "base": {
+      "length": 1031,
+      "ok": 3
+    },
+    "lora": {
+      "ok": 1034
+    }
+  },
+  "first_gain": "spider-0000",
+  "regression_ids": [
+    "spider-0001",
+    "spider-0209",
+    "spider-0224",
+    "spider-0252",
+    "spider-0254",
+    "spider-0305",
+    "spider-0306",
+    "spider-0307",
+    "spider-0308",
+    "spider-0323",
+    "spider-0324",
+    "spider-0339",
+    "spider-0355",
+    "spider-0409",
+    "spider-0421",
+    "spider-0518",
+    "spider-0577",
+    "spider-0902",
+    "spider-0906",
+    "spider-0907",
+    "spider-0913",
+    "spider-0952",
+    "spider-0953",
+    "spider-0979",
+    "spider-1021"
+  ]
+}

@@ -1,0 +1,1295 @@
+[
+ {
+  "id": "film",
+  "ddl": [
+   "venue(v INTEGER PRIMARY KEY, hall TEXT)",
+   "showing(v INTEGER, film TEXT, day TEXT, seats INTEGER)"
+  ],
+  "base": {
+   "venue": [
+    [
+     1,
+     "Loft"
+    ],
+    [
+     2,
+     "Pier"
+    ],
+    [
+     3,
+     "Nest"
+    ]
+   ],
+   "showing": [
+    [
+     1,
+     "Rain",
+     "2024-02-29",
+     4
+    ],
+    [
+     1,
+     "Rain",
+     "2024-03-01",
+     0
+    ],
+    [
+     2,
+     null,
+     "2024-03-31",
+     7
+    ]
+   ]
+  },
+  "extra": [
+   {
+    "showing": [
+     [
+      2,
+      "Rain",
+      "2024-04-01",
+      4
+     ],
+     [
+      null,
+      "Z",
+      "2024-03-01",
+      null
+     ]
+    ]
+   },
+   {
+    "showing": [
+     [
+      3,
+      "Ash",
+      "2024-03-30",
+      1
+     ],
+     [
+      1,
+      "Rain",
+      "2024-03-01",
+      0
+     ]
+    ]
+   }
+  ],
+  "cases": [
+   {
+    "category": "filter",
+    "question": "List film names for showings with exactly zero seats sold. Keep repeated names.",
+    "sql": "SELECT film FROM showing WHERE seats=0",
+    "expected": [
+     [
+      "Rain"
+     ]
+    ]
+   },
+   {
+    "category": "distinct",
+    "question": "How many different named films have a showing?",
+    "sql": "SELECT COUNT(DISTINCT film) FROM showing",
+    "expected": [
+     [
+      1
+     ]
+    ]
+   },
+   {
+    "category": "aggregate",
+    "question": "For each venue id in showing give its id and total seats sold.",
+    "sql": "SELECT v,SUM(seats) FROM showing GROUP BY v",
+    "expected": [
+     [
+      1,
+      4
+     ],
+     [
+      2,
+      7
+     ]
+    ]
+   },
+   {
+    "category": "join",
+    "question": "List the hall name for every showing with more than five seats sold.",
+    "sql": "SELECT hall FROM venue JOIN showing USING(v) WHERE seats>5",
+    "expected": [
+     [
+      "Pier"
+     ]
+    ]
+   },
+   {
+    "category": "date",
+    "question": "How many showings fall in March 2024?",
+    "sql": "SELECT COUNT(*) FROM showing WHERE day>='2024-03-01' AND day<'2024-04-01'",
+    "expected": [
+     [
+      2
+     ]
+    ]
+   },
+   {
+    "category": "zero",
+    "question": "Give each venue id and its number of showings, including empty venues.",
+    "sql": "SELECT a.v,COUNT(b.v) FROM venue a LEFT JOIN showing b ON b.v=a.v GROUP BY a.v",
+    "expected": [
+     [
+      1,
+      2
+     ],
+     [
+      2,
+      1
+     ],
+     [
+      3,
+      0
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": "relay",
+  "ddl": [
+   "node(id INTEGER PRIMARY KEY,parent INTEGER,layer TEXT)",
+   "ping(dest INTEGER,stamp TEXT,ms INTEGER)"
+  ],
+  "base": {
+   "node": [
+    [
+     1,
+     null,
+     "root"
+    ],
+    [
+     2,
+     1,
+     "edge"
+    ],
+    [
+     3,
+     1,
+     "edge"
+    ]
+   ],
+   "ping": [
+    [
+     2,
+     "2023-12-31",
+     10
+    ],
+    [
+     2,
+     "2024-01-01",
+     null
+    ],
+    [
+     1,
+     "2024-01-31",
+     30
+    ]
+   ]
+  },
+  "extra": [
+   {
+    "ping": [
+     [
+      null,
+      "2024-01-10",
+      40
+     ],
+     [
+      3,
+      "2024-02-01",
+      0
+     ]
+    ]
+   },
+   {
+    "node": [
+     [
+      4,
+      2,
+      null
+     ]
+    ],
+    "ping": [
+     [
+      4,
+      "2024-01-31",
+      30
+     ],
+     [
+      2,
+      "2024-01-01",
+      null
+     ]
+    ]
+   }
+  ],
+  "cases": [
+   {
+    "category": "filter",
+    "question": "Which destination ids had an unknown latency? Keep duplicates.",
+    "sql": "SELECT dest FROM ping WHERE ms IS NULL",
+    "expected": [
+     [
+      2
+     ]
+    ]
+   },
+   {
+    "category": "distinct",
+    "question": "Count distinct parent node ids recorded in the topology.",
+    "sql": "SELECT COUNT(DISTINCT parent) FROM node",
+    "expected": [
+     [
+      1
+     ]
+    ]
+   },
+   {
+    "category": "aggregate",
+    "question": "For each destination in the log report its id and minimum known latency.",
+    "sql": "SELECT dest, MIN(ms) FROM ping GROUP BY dest",
+    "expected": [
+     [
+      1,
+      30
+     ],
+     [
+      2,
+      10
+     ]
+    ]
+   },
+   {
+    "category": "join",
+    "question": "List each child id and its parent's layer when the parent exists.",
+    "sql": "SELECT c.id,p.layer FROM node c JOIN node p ON c.parent=p.id",
+    "expected": [
+     [
+      2,
+      "root"
+     ],
+     [
+      3,
+      "root"
+     ]
+    ]
+   },
+   {
+    "category": "date",
+    "question": "Which latencies were recorded in January 2024? Include missing measurements and duplicates.",
+    "sql": "SELECT ms FROM ping WHERE stamp>='2024-01-01' AND stamp<'2024-02-01'",
+    "expected": [
+     [
+      null
+     ],
+     [
+      30
+     ]
+    ]
+   },
+   {
+    "category": "zero",
+    "question": "For every node give its id and number of direct children, even if zero.",
+    "sql": "SELECT p.id,COUNT(c.id) FROM node p LEFT JOIN node c ON c.parent=p.id GROUP BY p.id",
+    "expected": [
+     [
+      1,
+      2
+     ],
+     [
+      2,
+      0
+     ],
+     [
+      3,
+      0
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": "textile",
+  "ddl": [
+   "roll(lot TEXT, part INTEGER, shade TEXT, PRIMARY KEY(lot,part))",
+   "cut(lot TEXT,part INTEGER,day TEXT,metres REAL)"
+  ],
+  "base": {
+   "roll": [
+    [
+     "A",
+     1,
+     "red"
+    ],
+    [
+     "A",
+     2,
+     "blue"
+    ],
+    [
+     "B",
+     1,
+     "red"
+    ]
+   ],
+   "cut": [
+    [
+     "A",
+     2,
+     "2025-06-30",
+     2
+    ],
+    [
+     "A",
+     2,
+     "2025-07-01",
+     3
+    ],
+    [
+     "B",
+     1,
+     "2025-07-31",
+     null
+    ]
+   ]
+  },
+  "extra": [
+   {
+    "cut": [
+     [
+      "A",
+      1,
+      "2025-08-01",
+      3
+     ],
+     [
+      "B",
+      2,
+      "2025-07-04",
+      9
+     ]
+    ]
+   },
+   {
+    "cut": [
+     [
+      "A",
+      2,
+      "2025-07-01",
+      3
+     ],
+     [
+      null,
+      1,
+      "2025-07-02",
+      2
+     ]
+    ]
+   }
+  ],
+  "cases": [
+   {
+    "category": "filter",
+    "question": "Give lot and part for cuts measuring at least three metres, with duplicates.",
+    "sql": "SELECT lot,part FROM cut WHERE metres>=3",
+    "expected": [
+     [
+      "A",
+      2
+     ]
+    ]
+   },
+   {
+    "category": "distinct",
+    "question": "Count the distinct nonmissing roll shades.",
+    "sql": "SELECT COUNT(DISTINCT shade) FROM roll",
+    "expected": [
+     [
+      2
+     ]
+    ]
+   },
+   {
+    "category": "aggregate",
+    "question": "For every lot in cut give lot and sum of cut lengths; retain an unknown sum.",
+    "sql": "SELECT lot,SUM(metres) FROM cut GROUP BY lot",
+    "expected": [
+     [
+      "A",
+      5
+     ],
+     [
+      "B",
+      null
+     ]
+    ]
+   },
+   {
+    "category": "join",
+    "question": "Give shade and length for every cut that matches its roll on both key columns.",
+    "sql": "SELECT r.shade,c.metres FROM cut c JOIN roll r ON c.lot=r.lot AND c.part=r.part",
+    "expected": [
+     [
+      "blue",
+      2
+     ],
+     [
+      "blue",
+      3
+     ],
+     [
+      "red",
+      null
+     ]
+    ]
+   },
+   {
+    "category": "date",
+    "question": "Count July 2025 cuts independently of recorded length.",
+    "sql": "SELECT COUNT(*) FROM cut WHERE day>='2025-07-01' AND day<'2025-08-01'",
+    "expected": [
+     [
+      2
+     ]
+    ]
+   },
+   {
+    "category": "zero",
+    "question": "For every roll give lot, part and cut count, including uncut rolls.",
+    "sql": "SELECT r.lot,r.part,COUNT(c.lot) FROM roll r LEFT JOIN cut c ON c.lot=r.lot AND c.part=r.part GROUP BY r.lot,r.part",
+    "expected": [
+     [
+      "A",
+      1,
+      0
+     ],
+     [
+      "A",
+      2,
+      2
+     ],
+     [
+      "B",
+      1,
+      1
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": "recital",
+  "ddl": [
+   "artist(id INTEGER PRIMARY KEY,nick TEXT)",
+   "piece(pid INTEGER PRIMARY KEY,title TEXT)",
+   "credit(id INTEGER,pid INTEGER,day TEXT)"
+  ],
+  "base": {
+   "artist": [
+    [
+     1,
+     "Bee"
+    ],
+    [
+     2,
+     "Eel"
+    ],
+    [
+     3,
+     "Ox"
+    ]
+   ],
+   "piece": [
+    [
+     4,
+     "Ice"
+    ],
+    [
+     5,
+     "Sun"
+    ]
+   ],
+   "credit": [
+    [
+     1,
+     4,
+     "2024-04-30"
+    ],
+    [
+     1,
+     5,
+     "2024-05-01"
+    ],
+    [
+     2,
+     5,
+     "2024-05-31"
+    ]
+   ]
+  },
+  "extra": [
+   {
+    "credit": [
+     [
+      1,
+      5,
+      "2024-06-01"
+     ],
+     [
+      null,
+      4,
+      "2024-05-10"
+     ]
+    ]
+   },
+   {
+    "credit": [
+     [
+      3,
+      4,
+      "2024-05-05"
+     ],
+     [
+      2,
+      null,
+      "2024-05-31"
+     ]
+    ]
+   }
+  ],
+  "cases": [
+   {
+    "category": "filter",
+    "question": "Show artist ids credited to piece 5, keeping every credit.",
+    "sql": "SELECT id FROM credit WHERE pid=5",
+    "expected": [
+     [
+      1
+     ],
+     [
+      2
+     ]
+    ]
+   },
+   {
+    "category": "distinct",
+    "question": "Count the different pieces with a credit.",
+    "sql": "SELECT COUNT(DISTINCT pid) FROM credit",
+    "expected": [
+     [
+      2
+     ]
+    ]
+   },
+   {
+    "category": "aggregate",
+    "question": "For each piece id in the credit ledger report how many different artists it credits.",
+    "sql": "SELECT pid,COUNT(DISTINCT id) FROM credit GROUP BY pid",
+    "expected": [
+     [
+      4,
+      1
+     ],
+     [
+      5,
+      2
+     ]
+    ]
+   },
+   {
+    "category": "join",
+    "question": "List the artist nickname and piece title for each credit with both partners present.",
+    "sql": "SELECT nick,title FROM credit JOIN artist USING(id) JOIN piece USING(pid)",
+    "expected": [
+     [
+      "Bee",
+      "Ice"
+     ],
+     [
+      "Bee",
+      "Sun"
+     ],
+     [
+      "Eel",
+      "Sun"
+     ]
+    ]
+   },
+   {
+    "category": "date",
+    "question": "Return distinct known artist ids credited in May 2024.",
+    "sql": "SELECT DISTINCT id FROM credit WHERE id IS NOT NULL AND day>='2024-05-01' AND day<'2024-06-01'",
+    "expected": [
+     [
+      1
+     ],
+     [
+      2
+     ]
+    ]
+   },
+   {
+    "category": "zero",
+    "question": "For every artist id, count distinct pieces credited, retaining artists with none.",
+    "sql": "SELECT a.id,COUNT(DISTINCT c.pid) FROM artist a LEFT JOIN credit c ON a.id=c.id GROUP BY a.id",
+    "expected": [
+     [
+      1,
+      2
+     ],
+     [
+      2,
+      1
+     ],
+     [
+      3,
+      0
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": "quota",
+  "ddl": [
+   "quota(team TEXT PRIMARY KEY,ceiling INTEGER)",
+   "posting(team TEXT, booked TEXT, units INTEGER)"
+  ],
+  "base": {
+   "quota": [
+    [
+     "QA",
+     8
+    ],
+    [
+     "Art",
+     3
+    ],
+    [
+     "Ops",
+     5
+    ]
+   ],
+   "posting": [
+    [
+     "QA",
+     "2025-08-31",
+     2
+    ],
+    [
+     "QA",
+     "2025-09-01",
+     -1
+    ],
+    [
+     "Art",
+     "2025-09-30",
+     3
+    ]
+   ]
+  },
+  "extra": [
+   {
+    "posting": [
+     [
+      "Art",
+      "2025-10-01",
+      -2
+     ],
+     [
+      null,
+      "2025-09-03",
+      8
+     ]
+    ]
+   },
+   {
+    "posting": [
+     [
+      "QA",
+      "2025-09-01",
+      -1
+     ],
+     [
+      "XX",
+      "2025-09-09",
+      null
+     ]
+    ]
+   }
+  ],
+  "cases": [
+   {
+    "category": "filter",
+    "question": "List team names from all negative postings.",
+    "sql": "SELECT team FROM posting WHERE units<0",
+    "expected": [
+     [
+      "QA"
+     ]
+    ]
+   },
+   {
+    "category": "distinct",
+    "question": "Count distinct non-null unit adjustments.",
+    "sql": "SELECT COUNT(DISTINCT units) FROM posting",
+    "expected": [
+     [
+      3
+     ]
+    ]
+   },
+   {
+    "category": "aggregate",
+    "question": "Give each team in posting and its net unit movement.",
+    "sql": "SELECT team,SUM(units) FROM posting GROUP BY team",
+    "expected": [
+     [
+      "QA",
+      1
+     ],
+     [
+      "Art",
+      3
+     ]
+    ]
+   },
+   {
+    "category": "join",
+    "question": "List team and booked date for individual postings equal to that team's ceiling.",
+    "sql": "SELECT p.team,p.booked FROM posting p JOIN quota q ON p.team=q.team WHERE p.units=q.ceiling",
+    "expected": [
+     [
+      "Art",
+      "2025-09-30"
+     ]
+    ]
+   },
+   {
+    "category": "date",
+    "question": "What is the total unit adjustment for September 2025?",
+    "sql": "SELECT SUM(units) FROM posting WHERE booked>='2025-09-01' AND booked<'2025-10-01'",
+    "expected": [
+     [
+      2
+     ]
+    ]
+   },
+   {
+    "category": "zero",
+    "question": "For every quota team give the team and number of negative postings including zero.",
+    "sql": "SELECT q.team,COUNT(p.team) FROM quota q LEFT JOIN posting p ON q.team=p.team AND p.units<0 GROUP BY q.team",
+    "expected": [
+     [
+      "QA",
+      1
+     ],
+     [
+      "Art",
+      0
+     ],
+     [
+      "Ops",
+      0
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": "water",
+  "ddl": [
+   "gauge(code TEXT PRIMARY KEY,basin TEXT)",
+   "waterday(d TEXT PRIMARY KEY)",
+   "reading(code TEXT,d TEXT,level INTEGER)"
+  ],
+  "base": {
+   "gauge": [
+    [
+     "g",
+     "E"
+    ],
+    [
+     "h",
+     "W"
+    ]
+   ],
+   "waterday": [
+    [
+     "2025-02-28"
+    ],
+    [
+     "2025-03-01"
+    ],
+    [
+     "2025-03-31"
+    ]
+   ],
+   "reading": [
+    [
+     "g",
+     "2025-02-28",
+     0
+    ],
+    [
+     "h",
+     "2025-03-01",
+     8
+    ],
+    [
+     "g",
+     "2025-03-01",
+     null
+    ]
+   ]
+  },
+  "extra": [
+   {
+    "reading": [
+     [
+      "h",
+      "2025-04-01",
+      8
+     ],
+     [
+      "g",
+      "2025-03-31",
+      0
+     ]
+    ]
+   },
+   {
+    "reading": [
+     [
+      "h",
+      "2025-03-01",
+      8
+     ],
+     [
+      null,
+      "2025-03-31",
+      2
+     ]
+    ]
+   }
+  ],
+  "cases": [
+   {
+    "category": "filter",
+    "question": "Which gauge codes recorded a level of zero? Keep repeats.",
+    "sql": "SELECT code FROM reading WHERE level=0",
+    "expected": [
+     [
+      "g"
+     ]
+    ]
+   },
+   {
+    "category": "distinct",
+    "question": "How many distinct known levels have been recorded?",
+    "sql": "SELECT COUNT(DISTINCT level) FROM reading",
+    "expected": [
+     [
+      2
+     ]
+    ]
+   },
+   {
+    "category": "aggregate",
+    "question": "List each reading date and its maximum known level.",
+    "sql": "SELECT d,MAX(level) FROM reading GROUP BY d",
+    "expected": [
+     [
+      "2025-02-28",
+      0
+     ],
+     [
+      "2025-03-01",
+      8
+     ]
+    ]
+   },
+   {
+    "category": "join",
+    "question": "For known gauges, give basin and date for readings with missing levels.",
+    "sql": "SELECT basin,d FROM gauge JOIN reading USING(code) WHERE level IS NULL",
+    "expected": [
+     [
+      "E",
+      "2025-03-01"
+     ]
+    ]
+   },
+   {
+    "category": "date",
+    "question": "What was the mean known level in March 2025?",
+    "sql": "SELECT AVG(level) FROM reading WHERE d>='2025-03-01' AND d<'2025-04-01'",
+    "expected": [
+     [
+      8
+     ]
+    ]
+   },
+   {
+    "category": "zero",
+    "question": "For every date in waterday give date and number of nonmissing levels including zero.",
+    "sql": "SELECT w.d,COUNT(r.level) FROM waterday w LEFT JOIN reading r ON w.d=r.d GROUP BY w.d",
+    "expected": [
+     [
+      "2025-02-28",
+      1
+     ],
+     [
+      "2025-03-01",
+      1
+     ],
+     [
+      "2025-03-31",
+      0
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": "kiln",
+  "ddl": [
+   "kiln(k INTEGER PRIMARY KEY,plant TEXT)",
+   "firing(f INTEGER PRIMARY KEY,k INTEGER,day TEXT)",
+   "assay(f INTEGER,grade TEXT)"
+  ],
+  "base": {
+   "kiln": [
+    [
+     1,
+     "P"
+    ],
+    [
+     2,
+     "Q"
+    ],
+    [
+     3,
+     "Q"
+    ]
+   ],
+   "firing": [
+    [
+     10,
+     1,
+     "2023-10-31"
+    ],
+    [
+     11,
+     1,
+     "2023-11-01"
+    ],
+    [
+     12,
+     2,
+     "2023-11-30"
+    ]
+   ],
+   "assay": [
+    [
+     10,
+     "A"
+    ],
+    [
+     10,
+     "B"
+    ],
+    [
+     12,
+     null
+    ]
+   ]
+  },
+  "extra": [
+   {
+    "firing": [
+     [
+      13,
+      3,
+      "2023-12-01"
+     ]
+    ],
+    "assay": [
+     [
+      11,
+      "A"
+     ],
+     [
+      99,
+      "A"
+     ]
+    ]
+   },
+   {
+    "assay": [
+     [
+      10,
+      "A"
+     ],
+     [
+      12,
+      "C"
+     ],
+     [
+      null,
+      "B"
+     ]
+    ]
+   }
+  ],
+  "cases": [
+   {
+    "category": "filter",
+    "question": "Return firing ids for all B-grade assays.",
+    "sql": "SELECT f FROM assay WHERE grade='B'",
+    "expected": [
+     [
+      10
+     ]
+    ]
+   },
+   {
+    "category": "distinct",
+    "question": "Count the different known assay grades.",
+    "sql": "SELECT COUNT(DISTINCT grade) FROM assay",
+    "expected": [
+     [
+      2
+     ]
+    ]
+   },
+   {
+    "category": "aggregate",
+    "question": "For each firing id recorded in assay show id and number of named grades, counting repeats.",
+    "sql": "SELECT f,COUNT(grade) FROM assay GROUP BY f",
+    "expected": [
+     [
+      10,
+      2
+     ],
+     [
+      12,
+      0
+     ]
+    ]
+   },
+   {
+    "category": "join",
+    "question": "Return plant and grade for each assay that can be traced to a firing and kiln.",
+    "sql": "SELECT plant,grade FROM assay JOIN firing USING(f) JOIN kiln USING(k)",
+    "expected": [
+     [
+      "P",
+      "A"
+     ],
+     [
+      "P",
+      "B"
+     ],
+     [
+      "Q",
+      null
+     ]
+    ]
+   },
+   {
+    "category": "date",
+    "question": "List firing ids started during November 2023.",
+    "sql": "SELECT f FROM firing WHERE day>='2023-11-01' AND day<'2023-12-01'",
+    "expected": [
+     [
+      11
+     ],
+     [
+      12
+     ]
+    ]
+   },
+   {
+    "category": "zero",
+    "question": "Show every kiln id with its number of firings, even unused kilns.",
+    "sql": "SELECT k.k,COUNT(f.f) FROM kiln k LEFT JOIN firing f ON k.k=f.k GROUP BY k.k",
+    "expected": [
+     [
+      1,
+      2
+     ],
+     [
+      2,
+      1
+     ],
+     [
+      3,
+      0
+     ]
+    ]
+   }
+  ]
+ },
+ {
+  "id": "seed",
+  "ddl": [
+   "bed(id INTEGER PRIMARY KEY,crop TEXT)",
+   "visit(id INTEGER,day TEXT,alive INTEGER,sown INTEGER)"
+  ],
+  "base": {
+   "bed": [
+    [
+     1,
+     "rye"
+    ],
+    [
+     2,
+     "pea"
+    ],
+    [
+     3,
+     "rye"
+    ]
+   ],
+   "visit": [
+    [
+     1,
+     "2024-02-01",
+     5,
+     10
+    ],
+    [
+     1,
+     "2024-02-29",
+     8,
+     10
+    ],
+    [
+     2,
+     "2024-03-01",
+     0,
+     0
+    ]
+   ]
+  },
+  "extra": [
+   {
+    "visit": [
+     [
+      3,
+      "2024-01-31",
+      null,
+      12
+     ],
+     [
+      null,
+      "2024-02-29",
+      1,
+      1
+     ]
+    ]
+   },
+   {
+    "visit": [
+     [
+      2,
+      "2024-02-14",
+      3,
+      9
+     ],
+     [
+      1,
+      "2024-02-29",
+      8,
+      10
+     ]
+    ]
+   }
+  ],
+  "cases": [
+   {
+    "category": "filter",
+    "question": "Give dates of visits on which no seeds had been sown.",
+    "sql": "SELECT day FROM visit WHERE sown=0",
+    "expected": [
+     [
+      "2024-03-01"
+     ]
+    ]
+   },
+   {
+    "category": "distinct",
+    "question": "How many different recorded crops do the beds contain?",
+    "sql": "SELECT COUNT(DISTINCT crop) FROM bed",
+    "expected": [
+     [
+      2
+     ]
+    ]
+   },
+   {
+    "category": "aggregate",
+    "question": "For each visited bed id report the sum of living plants over all its visits.",
+    "sql": "SELECT id,SUM(alive) FROM visit GROUP BY id",
+    "expected": [
+     [
+      1,
+      13
+     ],
+     [
+      2,
+      0
+     ]
+    ]
+   },
+   {
+    "category": "join",
+    "question": "List the crop for each matched visit with more than half the seeds alive and a positive sow count.",
+    "sql": "SELECT crop FROM bed JOIN visit USING(id) WHERE sown>0 AND alive*2>sown",
+    "expected": [
+     [
+      "rye"
+     ]
+    ]
+   },
+   {
+    "category": "date",
+    "question": "How many visits took place in February of leap year 2024?",
+    "sql": "SELECT COUNT(*) FROM visit WHERE day>='2024-02-01' AND day<'2024-03-01'",
+    "expected": [
+     [
+      2
+     ]
+    ]
+   },
+   {
+    "category": "zero",
+    "question": "Give each bed id and the number of visits with at least one living plant, including zero.",
+    "sql": "SELECT b.id,COUNT(v.id) FROM bed b LEFT JOIN visit v ON v.id=b.id AND v.alive>0 GROUP BY b.id",
+    "expected": [
+     [
+      1,
+      2
+     ],
+     [
+      2,
+      0
+     ],
+     [
+      3,
+      0
+     ]
+    ]
+   }
+  ]
+ }
+]

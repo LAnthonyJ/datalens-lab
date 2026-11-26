@@ -1,0 +1,8 @@
+{
+  "reference_queries": 622,
+  "reference_skeletons": 57,
+  "formal_skeletons": 19,
+  "matching_patterns_by_category": {},
+  "overlapping_ids": [],
+  "scope": "Token-level abstraction of identifiers and literals; operators and clauses retained. This is a coarse sensitivity check, not AST equivalence or a pretraining audit."
+}

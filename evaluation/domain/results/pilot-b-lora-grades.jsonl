@@ -1,0 +1,48 @@
+{"id": "film-1", "database": "film", "category": "filter", "passed": false, "answer": "SELECT film FROM showings WHERE seats=0 ORDER BY film;"}
+{"id": "film-2", "database": "film", "category": "distinct", "passed": true, "answer": "SELECT COUNT(DISTINCT film) FROM showing;"}
+{"id": "film-3", "database": "film", "category": "aggregate", "passed": false, "answer": "SELECT v.id,S.seats FROM showing c JOIN venue ON c.v=v WHERE c.v IN (SELECT v FROM showing);"}
+{"id": "film-4", "database": "film", "category": "join", "passed": false, "answer": "SELECT hall FROM showing WHERE seats>5;"}
+{"id": "film-5", "database": "film", "category": "date", "passed": false, "answer": "SELECT COUNT(*) FROM showings WHERE day LIKE '%3%';"}
+{"id": "film-6", "database": "film", "category": "zero", "passed": false, "answer": "SELECT v,SUM(seats) FROM venue AND halls LIKE '%%%' UNION ALL SELECT v,SUM(sealls) FROM schedule WHERE halls LIKE '%%%';"}
+{"id": "relay-1", "database": "relay", "category": "filter", "passed": false, "answer": "SELECT DISTINCT dest FROM ping WHERE ms IS NULL;"}
+{"id": "relay-2", "database": "relay", "category": "distinct", "passed": false, "answer": "SELECT DISTINCT parent FROM ping WHERE dest IS NOT NULL;"}
+{"id": "relay-3", "database": "relay", "category": "aggregate", "passed": false, "answer": "SELECT id,min(ms) FROM ping WHERE dest IS NOT NULL;"}
+{"id": "relay-4", "database": "relay", "category": "join", "passed": false, "answer": "SELECT p.parent FROM node p JOIN ping c ON c.dest=p.parent WHERE p.parent IS NOT NULL;"}
+{"id": "relay-5", "database": "relay", "category": "date", "passed": false, "answer": "SELECT DISTINCT ms FROM ping WHERE stamp LIKE '2024-01%';"}
+{"id": "relay-6", "database": "relay", "category": "zero", "passed": false, "answer": "SELECT COALESCE(COUNT(parent),0) FROM node WHERE parent IS NOT NULL;"}
+{"id": "textile-1", "database": "textile", "category": "filter", "passed": true, "answer": "SELECT lot, part FROM cut WHERE metres>=3 AND part IS NOT NULL;"}
+{"id": "textile-2", "database": "textile", "category": "distinct", "passed": false, "answer": "SELECT DISTINCT shade FROM roll WHERE part IS NOT NULL;"}
+{"id": "textile-3", "database": "textile", "category": "aggregate", "passed": false, "answer": "SELECT lot,SUM(c.metres) FROM cut WHERE lot IS NOT NULL GROUP BY lot;"}
+{"id": "textile-4", "database": "textile", "category": "join", "passed": false, "answer": "SELECT shade,length FROM cut WHERE roll=slot AND slot IS NOT NULL;"}
+{"id": "textile-5", "database": "textile", "category": "date", "passed": false, "answer": "SELECT COUNT(*) FROM cut WHERE day='2025-07';"}
+{"id": "textile-6", "database": "textile", "category": "zero", "passed": false, "answer": "SELECT lot, part, COUNT(cut) FROM cut WHERE lot=roll PARTITION BY lot,part;"}
+{"id": "recital-1", "database": "recital", "category": "filter", "passed": false, "answer": "SELECT id FROM credit WHERE pid=5 GROUP BY id HAVING COUNT(pid)>0;"}
+{"id": "recital-2", "database": "recital", "category": "distinct", "passed": false, "answer": "SELECT DISTINCT pid FROM credit WHERE pid IS NOT NULL;"}
+{"id": "recital-3", "database": "recital", "category": "aggregate", "passed": false, "answer": "SELECT DISTINCT credit.id FROM credit WHERE pid IS NOT NULL;"}
+{"id": "recital-4", "database": "recital", "category": "join", "passed": false, "answer": "SELECT p.nick,p.title FROM credit c JOIN piece p ON c.pid=p.pid WHERE c.id IS NOT NULL AND p.id IS NOT NULL;"}
+{"id": "recital-5", "database": "recital", "category": "date", "passed": false, "answer": "SELECT DISTINCT id FROM credit WHERE day='May' AND pid IS NOT NULL;"}
+{"id": "recital-6", "database": "recital", "category": "zero", "passed": false, "answer": "SELECT COUNT(DISTINCT pid) FROM credit WHERE id IS NOT NULL;"}
+{"id": "quota-1", "database": "quota", "category": "filter", "passed": false, "answer": "SELECT team FROM posting WHERE booked IS NULL AND booked<0;"}
+{"id": "quota-2", "database": "quota", "category": "distinct", "passed": false, "answer": "SELECT DISTINCT units FROM posting WHERE booked IS NOT NULL;"}
+{"id": "quota-3", "database": "quota", "category": "aggregate", "passed": false, "answer": "SELECT COALESCE(units,blocked) FROM posting WHERE team IS NOT NULL;"}
+{"id": "quota-4", "database": "quota", "category": "join", "passed": false, "answer": "SELECT team, booked FROM posting WHERE booked IS NOT NULL AND booked <= ceiling;"}
+{"id": "quota-5", "database": "quota", "category": "date", "passed": false, "answer": "SELECT SUM(units) FROM posting WHERE booked IS NOT NULL AND month='September' AND year=2025;"}
+{"id": "quota-6", "database": "quota", "category": "zero", "passed": false, "answer": "SELECT team,SUM(CASE WHEN booked IS NULL OR booked='0' THEN -1 ELSE 0 END) FROM posting WHERE booked IS NULL OR boarded='0' GROUP BY team;"}
+{"id": "water-1", "database": "water", "category": "filter", "passed": true, "answer": "SELECT code FROM reading WHERE level=0;"}
+{"id": "water-2", "database": "water", "category": "distinct", "passed": false, "answer": "SELECT DISTINCT level FROM reading;"}
+{"id": "water-3", "database": "water", "category": "aggregate", "passed": false, "answer": "SELECT DATE(d) FROM waterday WHERE d IS NOT NULL AND MAX(level) IS NOT NULL;"}
+{"id": "water-4", "database": "water", "category": "join", "passed": false, "answer": "SELECT basin,date FROM waterday WHERE code IS NOT NULL AND level IS NULL;"}
+{"id": "water-5", "database": "water", "category": "date", "passed": false, "answer": "SELECT AVG(level) FROM reading WHERE d='2025-03';"}
+{"id": "water-6", "database": "water", "category": "zero", "passed": false, "answer": "SELECT date,SUM(CASE WHEN level IS NOT NULL THEN level ELSE 0 END) FROM reading WHERE d IS NOT NULL GROUP BY date;"}
+{"id": "kiln-1", "database": "kiln", "category": "filter", "passed": false, "answer": "SELECT DISTINCT firing.id FROM firing c JOIN assay f ON c.f=f.assay WHERE f.grade='B';"}
+{"id": "kiln-2", "database": "kiln", "category": "distinct", "passed": false, "answer": "SELECT DISTINCT grade FROM assay;"}
+{"id": "kiln-3", "database": "kiln", "category": "aggregate", "passed": false, "answer": "SELECT COALESCE(SUM(COUNT(*)),0) FROM firing c WHERE c.k IS NOT NULL AND c.k IN (SELECT f.k FROM assay a WHERE a.f=c.k GROUP BY c.k);"}
+{"id": "kiln-4", "database": "kiln", "category": "join", "passed": false, "answer": "SELECT plant,grade FROM assay c JOIN firing f ON c.firing=f.k AND c.assay=f.assay WHERE f.k IS NOT NULL;"}
+{"id": "kiln-5", "database": "kiln", "category": "date", "passed": false, "answer": "SELECT DISTINCT firing.id FROM firing WHERE k>=1001 AND day LIKE '2023-11%';"}
+{"id": "kiln-6", "database": "kiln", "category": "zero", "passed": false, "answer": "SELECT k,SUM(f) FROM firing WHERE c.k=k GROUP BY c.k;"}
+{"id": "seed-1", "database": "seed", "category": "filter", "passed": false, "answer": "SELECT DISTINCT day FROM visit WHERE sown IS NULL;"}
+{"id": "seed-2", "database": "seed", "category": "distinct", "passed": false, "answer": "SELECT DISTINCT crop FROM visit;"}
+{"id": "seed-3", "database": "seed", "category": "aggregate", "passed": false, "answer": "SELECT SUM(sown) FROM visit c WHERE c.id IN (SELECT id FROM bed);"}
+{"id": "seed-4", "database": "seed", "category": "join", "passed": false, "answer": "SELECT crop FROM bed WHERE sown>0 AND COUNT(CASE WHEN alive=1 THEN 1 END)>divby2;"}
+{"id": "seed-5", "database": "seed", "category": "date", "passed": false, "answer": "SELECT COUNT(*) FROM visit WHERE day LIKE 'February%' AND YEAR(2024)=2024 AND MONTH(2025)>0;"}
+{"id": "seed-6", "database": "seed", "category": "zero", "passed": false, "answer": "SELECT COALESCE(SUM(alive),0) FROM visit WHERE alive>0 GROUP BY id;"}

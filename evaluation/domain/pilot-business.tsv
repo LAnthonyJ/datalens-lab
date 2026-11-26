@@ -1,0 +1,41 @@
+category	missing_question	added_evidence	required_information	expected	unit
+rate	Our seed library received back 18 seed packets. What share of the packets we lent out came back?	We lent out 60 packets.	number of packets lent over the same lending cohort	30	%
+rate	In the last hiring round, 72 applicants passed screening. What was the interview conversion rate among those who passed screening?	Of those who passed, 18 went on to interview.	number of screened-in applicants who interviewed	25	%
+rate	The orchard inspected 240 apples on Monday. What fraction had bruises?	Thirty-six of those inspected apples had bruises.	number of inspected apples with bruises	15	%
+rate	We repaired 16 bicycles under warranty. What percentage of all our completed bicycle repairs did this account for?	The workshop completed 80 bicycle repairs in that period.	total completed repairs over same period	20	%
+rate	Five of our renewal notices bounced. What was our delivery success rate?	We attempted 100 notices, each once; all the others were delivered.	total notices attempted and whether the remaining notices were delivered	95	%
+weighted	The east kiln uses 3 kWh per tile and the west kiln uses 5. What is energy per tile across both kilns?	East made 80 tiles and west made 20.	production volumes per kiln or equivalent weights	3.4	kWh/tile
+weighted	The weekday counter sold 30 tickets at an average of 8 dollars. Saturday tickets averaged 12 dollars. What was the overall average ticket price?	Saturday sold 10 tickets.	number of Saturday tickets	9	dollars/ticket
+weighted	Courier A averages 18 minutes per delivery and B averages 30. What is the combined average?	A made 10 deliveries and B made 30.	delivery counts for each courier	27	minutes/delivery
+weighted	At the water works the first tank contains 40 litres of a 10% salt solution. A second tank holds a 20% solution. What is the final concentration after mixing by volume?	The second tank holds 60 litres; volumes add.	volume of second solution	16	%
+weighted	One apprentice earned 9 out of 10 on a short test and 70% on a longer test. What is the percentage across all marks, weighting each mark equally?	The longer test was worth 40 marks.	maximum marks or equivalent weight for the second test	74	%
+change	The ice rink's daily admissions reached 300 in June. What was the percentage rise over May?	May's daily admissions were 240.	May admissions on same daily basis	25	%
+change	A lamp now uses 12 watts. How many watts did the redesign save per lamp?	The old lamp drew 17 watts.	power draw before redesign	5	watts
+change	The pantry reported a 10% drop in waste this month. How many kilograms less did it discard?	It discarded 180 kg in the previous month.	previous month's waste in kg	18	kg
+change	Our catalog had 420 active titles at the start of the quarter. What was the net change through quarter end?	At quarter end 405 titles were active.	end-of-quarter active titles or additions and removals	-15	titles
+change	Our studio filled 80% of its seats in autumn. By how many percentage points did occupancy rise in winter?	Winter occupancy was 92%.	winter occupancy percentage	12	percentage points
+rank	At the used-book fair, Red sold 18 books and Blue sold 15. Which stall had higher gross revenue?	Red charged 2 dollars per book and Blue charged 4.	price per book or total revenue per stall	Blue	stall
+rank	Which print room used fewer sheets per finished booklet? North used 240 sheets and South used 210.	North completed 60 booklets and South completed 35.	booklets completed in each print room	North	room
+rank	Our hockey teams each played the same number of games. Which had the best goal difference? Owls scored 21 goals and Bears scored 24.	Owls conceded 11 and Bears conceded 18.	goals conceded or goal differences for both teams	Owls	team
+rank	Which route had the higher on-time share, Elm or Oak? Elm recorded 18 on-time buses and Oak recorded 15.	Elm operated 30 buses and Oak operated 20.	total buses operated on each route	Oak	route
+rank	In our pottery auction, which bowl fetched the higher price per kilogram? The blue bowl sold for 60 dollars and the white one for 48.	The blue bowl weighed 3 kg and the white one weighed 2 kg.	weight of each bowl	white	bowl
+finance	A florist sold 50 wreaths at 12 dollars each. What was gross profit on those sales?	Cost of goods sold for these wreaths was 360 dollars.	cost of goods sold for the wreaths	240	dollars
+finance	A band spent 720 dollars hiring a venue. What ticket price covers that hire exactly, with no other costs or revenue?	They will sell 90 tickets.	number of paying admissions	8	dollars/ticket
+finance	The museum gift shop invoiced 500 dollars before discounts. How much was collected, assuming no tax, refunds, or unpaid bills?	It gave a uniform discount of 8%.	discount rate or total discount	460	dollars
+finance	Each parcel label costs us 30 cents and sells for 50 cents. How many labels must we sell to cover the month's fixed costs?	Fixed costs were 80 dollars.	monthly fixed costs	400	labels
+finance	The festival kiosk collected 880 dollars in receipts including sales tax. What was pretax revenue?	A single 10% sales tax was applied to all sales.	sales tax rate or tax amount	800	dollars
+duration	A loom was available for 8 hours yesterday. What percentage of that time did it spend weaving?	Its weaving log shows 6 hours of running time.	actual weaving duration	75	%
+duration	Our first rehearsal ended at 14:45. How many minutes did it last without breaks?	It began at 13:20 the same day.	rehearsal start time	85	minutes
+duration	A launch window lasted 90 minutes. How much usable time remained after safety closures?	There was one safety closure lasting 14 minutes.	total non-overlapping closure duration	76	minutes
+duration	A pump ran for 36 hours during a continuous observation period. What was its duty cycle?	The observation covered 48 hours.	length of the observation window	75	%
+duration	The bookmobile was due back at 17:10. How many minutes late was it?	It arrived at 17:42 that day.	actual arrival time	32	minutes
+distribution	Five independent readings were taken. Four were 3, 9, 21 and 30. What was their median?	The fifth reading was 11.	missing fifth reading or enough bounds to determine the central value	11	reading units
+distribution	The largest fish in our sample weighed 8 kg. What was the sample range?	The smallest weighed 2.5 kg.	minimum weight	5.5	kg
+distribution	Our five visitor groups had sizes 2, 3, 3, 6 and one unrecorded value. What was the arithmetic mean group size?	The fifth group had 6 visitors.	size of fifth group	4	visitors
+distribution	Of all the sensor readings taken during calibration, what fraction exceeded 20 degrees?	The readings were 15, 20, 20, 22 and 25 degrees.	readings or both count above 20 and count observed	40	%
+distribution	Three daily harvests from a plot weighed 5, 7 and an unrecorded amount. What was the population variance of the three harvest weights?	The last harvest weighed 9 kg.	third harvest weight	2.666666667	kg squared
+coverage	The directory has verified contact details for 84 active clubs. What percentage of our active clubs does it cover?	There are 120 active clubs.	number of active clubs	70	%
+coverage	There are 55 plots in our survey. Teams visited 25 in week one and 20 in week two. What percentage were visited at least once?	Exactly one plot was visited in both weeks; each weekly count is distinct plots.	overlap between weeks or distinct visited plot count	80	%
+coverage	A six-page form requires a signature on every page. Across ten completed forms what percentage of required signatures were present?	Six signatures were missing in total.	count of missing or present signatures	90	%
+coverage	Our archive promised a digital copy of every surviving program. It has digitized 45 distinct programs. What is its coverage gap in programs?	There are 58 distinct surviving programs.	total surviving programs	13	programs
+coverage	We verified alarm checks in 60 distinct active rooms. What percentage of active guest rooms still lack a verified check?	There are 85 active guest rooms.	total active rooms	29.4117647	%

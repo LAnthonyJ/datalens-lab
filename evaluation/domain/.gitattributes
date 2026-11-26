@@ -1,0 +1,7 @@
+# Preserve the exact hashed experiment receipts and frozen runner on every OS.
+*.py -text whitespace=cr-at-eol,-blank-at-eof
+*.json -text whitespace=cr-at-eol,-blank-at-eof
+*.jsonl -text whitespace=cr-at-eol,-blank-at-eof
+*.tsv -text whitespace=cr-at-eol,-blank-at-eof
+*.csv -text whitespace=cr-at-eol,-blank-at-eof
+PROTOCOL.md -text whitespace=cr-at-eol,-blank-at-eof

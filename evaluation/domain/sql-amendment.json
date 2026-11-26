@@ -1,0 +1,15 @@
+{
+  "utc": "2026-11-26T10:02:06.425792+00:00",
+  "reason": "Structural overlap identified and replaced before first B answer. Original A protocol and scoring remain frozen.",
+  "before": {
+    "confirm-b.jsonl": "f36dee8c67365eb411dbc325797b3474383fab5e5d6ee3af27979dced416bb94",
+    "confirm-db.json": "3bcc9a7bf18ba4f26e546303cd69d80432d86c52725e75bde9cc767514ced541"
+  },
+  "after": {
+    "confirm-b.jsonl": "44a8d2ada40709b9c1ac83674b3a5dcf5abf4330a68f6fe2031d3576de6d543a",
+    "confirm-db.json": "89e46e57f5e068f41f725360ae6ec3ae752ef77c596441c449bb65d24e5e03ac",
+    "amend_sql.py": "24d816985dbdcf9646f3a6bdda91a333ff093a86c7c5aa3166ed06d074281a1a",
+    "sql-structure-audit.json": "d2caadfa4004301f9a02fc17c47109746522f0a2081138fa2955fb5ea0eb0bd9"
+  },
+  "first_sql_manifest_existed": false
+}

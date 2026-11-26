@@ -6,7 +6,16 @@ Can a 0.8B-parameter model write a SQL query and recognize when a question is mi
 
 [Watch the walkthrough (8:53)](12311701_张航源.mp4) · [Read the experiment report](12311701_张航源.pdf) · [Open the training notebook](raytrain.ipynb) · [Run the demo](#run-the-demo-on-windows)
 
-## What improved after fine-tuning
+## Checkpoint comparison
+
+Under the demo's 128-token response budget, the original Qwen3.5-0.8B passed **53 of 1,034** Spider development questions. The fixed-learning-rate LoRA candidate passed **208 of 1,034**. Each query had to return the reference result across the official test databases. LoRA repaired 180 baseline failures and introduced 25 regressions. The paired gain was **15.0 percentage points** (97.5% database-bootstrap interval, +10.7 to +20.0).
+
+The baseline hit the response limit on 1,031 answers. LoRA hit it on zero. This comparison measures the ability to deliver correct SQL within the demo budget. The complete [paired answers](evaluation/domain/results/spider-answers.jsonl) and [scores](evaluation/domain/results/spider-grades.csv) include both successes and failures.
+
+The registered business comparison covers 400 paired financial-report scenarios. The custom SQL comparison covers 480 questions on 80 schemas. Their [protocol and reproduction guide](evaluation/domain/README.md) fixes the passing criteria and explains how the cases were screened.
+
+<details>
+<summary>Historical regression check · 20 missing-data questions</summary>
 
 **On 20 held-out English questions with missing data, a second round of domain fine-tuning with LoRA raised the pass rate from 50% to 75%.** The baseline was the checkpoint after the first round of English domain training. To pass, the assistant had to ask for the specific information needed to answer. Both checkpoints saw the same prompts and were graded against the same criteria with model identities hidden.
 
@@ -19,6 +28,8 @@ Can a 0.8B-parameter model write a SQL query and recognize when a question is mi
 > **After LoRA** · Please share the return count and number of damaged returns, along with the definition of a damaged return.
 
 The rate needs two counts from the same group of returns. The baseline asked for records without identifying both counts. The tuned answer named the numerator and denominator.
+
+</details>
 
 <details>
 <summary>Checkpoints, scoring and all 44 confirmation questions</summary>

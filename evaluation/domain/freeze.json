@@ -1,0 +1,33 @@
+{
+  "utc": "2026-11-26T09:49:04.911776+00:00",
+  "code": {
+    "ai_review.py": "eda3b812a4ad2af865b8e7e7e01dd9979e2ca73713ef57e4d2db5fc091e87385",
+    "blind.py": "18bde81fad586a4569ce3d0c37fa23d0537ce04308f588bbcc03ad75b5f2e5e2",
+    "build_pilot.py": "0d79ccbd30285792297ce246bf9eccd96e4a47320b5c0bc627d9d4056e0cb580",
+    "calibrated_review.py": "439904d0ed45c3a125f4ff6c3f974aff08feaeb602ef94aafed1aac739b62357",
+    "confirmation_business.py": "7e599aa7a1e075d8c2c81a38a5e095842927306c67772077739faacb2f125d8b",
+    "confirmation_sql.py": "cea2fae6461dbe3cc2774c99060ad4d988abbc84d8c9f51a4b272f6f03b6d07b",
+    "freeze.py": "d2e08c40189260a6d5c9f885fe958d2a2749f8d620f5722b7925caaaa594f930",
+    "infer.py": "1e0a954d06934f083cca2d2564886a244bc7ea6b014538d6e589cab592119185",
+    "numeric.py": "914988ed78976e28b896c5a760498747576a03e8c079b9aa1a268ca2c61e88ec",
+    "overlap.py": "866acfe43a67f24d19fc70715c0418471ea5949e7cecf593b736e28f7f2cf1ef",
+    "paired.py": "6536a8ff580b488bd35dd6b874598e0b1f3ed831a821608025c76fa2821856d2",
+    "spider_inputs.py": "4220bdf3bb6c81ed4628e749e0151f9b97216501ed3b8b44c2ea57b3df5bbedc",
+    "spider_score.py": "66ddd7b8f1782e1b1c1d84d7a3d16a134b9b6d7e83f0015ccfc224360b3f2614",
+    "sql_cases.py": "2e264b1038c27afd051b32f403604903af721c975ea5339d20316e94f70e72fb",
+    "PROTOCOL.md": "898b36ab1222bfd44dc67cdd1376b5afda2b9032c4423da91aa74ac3d7a07a04",
+    "pilot-business.tsv": "a3013c0b0e837f82b1e923e2008af72b6ac541b774282887f1bddfb6c50c7753",
+    "pilot-db.json": "1866aa7f935aecd47a90dd34df27eed3442807d34c10bfec58e9308764c5a958"
+  },
+  "data": {
+    "confirm-a.tsv": "c9a35ccf12c6c97aa17eff8c292af223acc4679ac404e500f833b4c8261cf6ab",
+    "confirm-a.jsonl": "8b054c23b1c8f00fba42b6b6e875bd83a712c5ea0259a1c2b6a381cfba1ee697",
+    "confirm-db.json": "3bcc9a7bf18ba4f26e546303cd69d80432d86c52725e75bde9cc767514ced541",
+    "confirm-b.jsonl": "f36dee8c67365eb411dbc325797b3474383fab5e5d6ee3af27979dced416bb94",
+    "overlap.json": "9a073833a23ff7689c1b5c741fb4663e9a1c218e9da2be0d9cbcc42f5e384b29",
+    "spider.jsonl": "e05ca254c501fe3ffe89b812e0a98d76e36558878db3ee5a1555b1b896c646b4",
+    "tatqa-train.json": "2df6e722cdbaaa37efcbfb280f5c9a15be29a6ec18f618ef936fe63cc6d07c69",
+    "spider-original.zip": "00636695dabed6b5f4b8328a16b13e069a2f16591d5efcce57660669c85b121b",
+    "spider-suites-official.download": "9ec24ea8debc6bd04abfe137b5f1a739b5a8836f32c0464e4dfc94eb7f41da96"
+  }
+}
