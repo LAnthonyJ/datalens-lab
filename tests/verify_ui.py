@@ -13,9 +13,42 @@ def check_width(page, width):
     assert page.evaluate("document.documentElement.scrollWidth") <= width
 
 
-def check_chat(browser, url, width, capture):
+def text_contrast(locator, pseudo=None):
+    # Composite translucent ancestor backgrounds in paint order.
+    return locator.evaluate("""(node, pseudo) => {
+        function rgba(value) { return value.match(/[\\d.]+/g).map(Number); }
+        function blend(top, bottom) {
+            const a = top[3] ?? 1;
+            return bottom.map((c, i) => a * top[i] + (1 - a) * c);
+        }
+        function luminance(rgb) {
+            const [r, g, b] = rgb.map(v => {
+                const s = v / 255;
+                return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+            });
+            return .2126*r + .7152*g + .0722*b;
+        }
+        let bg = [255,255,255];
+        const chain = [];
+        for (let el=node; el; el=el.parentElement) chain.unshift(el);
+        for (const el of chain) bg = blend(rgba(getComputedStyle(el).backgroundColor), bg);
+        const fg = blend(rgba(getComputedStyle(node, pseudo).color), bg);
+        const values = [luminance(fg), luminance(bg)].sort((a,b)=>b-a);
+        return (values[0]+.05)/(values[1]+.05);
+    }""", pseudo)
+
+
+def check_contrast(page, items):
+    for selector, pseudo in items:
+        item = page.locator(selector).first
+        expect(item).to_be_visible()
+        ratio = text_contrast(item, pseudo)
+        assert ratio >= 4.5, f"{selector} {pseudo or ''}: {ratio:.2f}:1"
+
+
+def check_chat(browser, url, width, height, theme, capture):
     context = browser.new_context(
-        viewport={"width": width, "height": 800}, locale="en-US", color_scheme="light",
+        viewport={"width": width, "height": height}, locale="en-US", color_scheme=theme,
         permissions=["clipboard-read", "clipboard-write"],
     )
     page = context.new_page()
@@ -26,6 +59,9 @@ def check_chat(browser, url, width, capture):
         box = page.get_by_role("textbox").last
         expect(starter).to_be_in_viewport()
         expect(box).to_be_in_viewport()
+        assert page.locator("body").evaluate("e => e.classList.contains('dark')") == (theme == "dark")
+        check_contrast(page, [("#lab-heading h2", None), (".lab-brand h1", None),
+                              (".lab-model span", None), ("#lab-input textarea", "::placeholder")])
         starter.click()
         code = page.locator("#lab-chat code.language-sql")
         expect(code).to_contain_text("FROM sales", timeout=120000)
@@ -35,15 +71,18 @@ def check_chat(browser, url, width, capture):
         expect(page.get_by_text(SQL_PROMPT, exact=True)).to_have_count(1)
         expect(starter).to_be_hidden()
         check_width(page, width)
+        check_contrast(page, [("#lab-chat .message.user p", None), ("pre:has(code.language-sql)", "::before"),
+                              ("code.language-sql", None), ("code .keyword", None), ("code .function", None)])
         copy = page.locator('#lab-chat button[title="copy"]')
         copy.click()
         copied = page.evaluate("navigator.clipboard.readText()")
         assert copied.strip() == code.inner_text().strip()
         count_rows(copied)
-        if capture and width == 1280:
+        if capture and width == 1280 and theme == "light":
             page.mouse.move(0, 0)
             page.locator(".gradio-container").first.screenshot(path=capture)
         retry.click()
+        page.get_by_test_id("stop-button").wait_for()
         expect(code).to_contain_text("FROM sales", timeout=120000)
         retry.wait_for()
         expect(page.get_by_test_id("stop-button")).to_be_hidden(timeout=120000)
@@ -72,7 +111,7 @@ def check_chat(browser, url, width, capture):
         expect(page.get_by_test_id("stop-button")).to_be_hidden(timeout=120000)
         expect(page.get_by_text(followup, exact=True)).to_have_count(1)
         check_width(page, width)
-        print(f"PASS {width}px, copied SQL returned 3. Conversation:", page.locator("#lab-chat").inner_text(), flush=True)
+        print(f"PASS {width}x{height} {theme}, copied SQL returned 3. Conversation:", page.locator("#lab-chat").inner_text(), flush=True)
     finally:
         context.close()
 
@@ -84,6 +123,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     with sync_playwright() as pw:
         browser = pw.chromium.launch(channel="msedge")
-        for width in (1280, 390):
-            check_chat(browser, args.url, width, args.capture)
+        for theme in ("dark", "light"):
+            for width, height in ((680, 548), (390, 800), (1280, 800)):
+                check_chat(browser, args.url, width, height, theme, args.capture)
         browser.close()

@@ -1,42 +1,67 @@
-.gradio-container { max-width: 1040px !important; margin: auto; padding: 0 32px 28px !important; }
-body, .gradio-container { background: #f4f7fb; color: #172942; }
-.lab-header { display: flex; justify-content: space-between; align-items: center; padding: 28px 0 22px; border-bottom: 1px solid #c9d4e0; gap: 12px; }
+body {
+  --lab-page: #f4f7fb;
+  --lab-panel: #ffffff;
+  --lab-ink: #172942;
+  --lab-muted: #42566f;
+  --lab-line: #b0bfd1;
+  --lab-question: #e5efff;
+  --lab-question-ink: #183659;
+  --lab-code: #f1f5fa;
+  --lab-keyword: #165193;
+  --lab-function: #953c21;
+  --lab-focus: #2467c0;
+}
+body.dark {
+  --lab-page: #182536;
+  --lab-panel: #111d2e;
+  --lab-ink: #edf3fb;
+  --lab-muted: #becce0;
+  --lab-line: #72849c;
+  --lab-question: #244365;
+  --lab-question-ink: #f4f8ff;
+  --lab-code: #1c2c41;
+  --lab-keyword: #c5a5ff;
+  --lab-function: #87d5ff;
+  --lab-focus: #92bdff;
+}
+body, .gradio-container { background: var(--lab-page); color: var(--lab-ink); }
+.gradio-container {
+  width: min(100vw, 1040px) !important; max-width: 1040px !important; min-width: 0 !important;
+  box-sizing: border-box !important; margin: auto; padding: 0 clamp(10px, 2vw, 28px) 24px !important;
+}
+.gradio-container .main, .gradio-container .contain { min-width: 0; box-sizing: border-box; }
+.lab-header { display: flex; justify-content: space-between; align-items: center; padding: 24px 0 18px; border-bottom: 1px solid var(--lab-line); gap: 12px; }
 .lab-brand, .lab-model { display: flex; align-items: center; gap: 12px; }
-.lab-brand h1 { font: 650 25px/1.1 "Segoe UI", sans-serif; color: #172942; letter-spacing: -.045em; margin: 0; }
+.lab-brand h1 { font: 650 25px/1.1 "Segoe UI", sans-serif; color: var(--lab-ink); letter-spacing: -.045em; margin: 0; }
 .lab-mark { display: inline-block; width: 32px; height: 32px; background: radial-gradient(circle at 62% 38%, #fafcff 0 13%, #8db8ff 15% 27%, #2967ca 30% 46%, #183e76 49% 64%, #78a5e9 68% 76%, #264f89 82%); border-radius: 50%; }
-.lab-model { font: 12px/1.5 Consolas, monospace; color: #42566f; }
-.lab-model span + span { border-left: 1px solid #b7c3d3; padding-left: 12px; }
-#lab-workspace { margin: 24px auto 0; max-width: 900px; width: 100%; min-width: 0; gap: 12px; }
-#lab-heading h2 { font: 600 clamp(24px, 3vw, 34px)/1.2 "Segoe UI", sans-serif; letter-spacing: -.045em; color: #172942; margin: 0 0 5px; }
-#lab-chat { border: 1px solid #cbd7e4; border-radius: 16px; background: white; box-shadow: 0 6px 24px #21365409; }
-#lab-chat .lab-welcome { color: #243f65; font-size: clamp(20px, 3vw, 28px); letter-spacing: -.035em; }
+.lab-model { font: 12px/1.5 Consolas, monospace; color: var(--lab-muted); }
+.lab-model span + span { border-left: 1px solid var(--lab-line); padding-left: 12px; }
+#lab-workspace { margin: 20px auto 0; max-width: 900px; width: 100%; min-width: 0; gap: 12px; }
+#lab-heading h2 { font: 600 clamp(24px, 3vw, 34px)/1.2 "Segoe UI", sans-serif; letter-spacing: -.045em; color: var(--lab-ink); margin: 0 0 5px; }
+#lab-chat { border: 1px solid var(--lab-line); border-radius: 16px; background: var(--lab-panel); }
+#lab-chat .lab-welcome { color: var(--lab-ink); font-size: clamp(20px, 3vw, 28px); letter-spacing: -.035em; }
 #lab-chat .message { overflow-wrap: anywhere; min-width: 0; max-width: 100%; }
-#lab-chat .user .message, #lab-chat .message.user { background: #e5efff; color: #183659; }
+#lab-chat .message.user { background: var(--lab-question); color: var(--lab-question-ink); }
+#lab-chat .message.user .prose, #lab-chat .message.user p { color: var(--lab-question-ink); }
 #lab-chat pre { max-width: 100%; overflow-x: auto; white-space: pre; }
-#lab-input { border: 1px solid #aabbd0; border-radius: 14px; background: white; padding: 5px; }
-#lab-input:focus-within { outline: 2px solid #367ad3; outline-offset: 2px; }
-.dark .gradio-container, body.dark { background: #182536; color: #e6edf7; }
-.dark #lab-chat, .dark #lab-input { background: #202f42; border-color: #475e79; }
-.dark .lab-brand h1, .dark #lab-heading h2, .dark #lab-chat .lab-welcome, .dark .lab-model { color: #e6edf7; }
-@media (max-width: 600px) {
-  .gradio-container { padding: 0 12px 16px !important; }
-  .lab-header { padding: 16px 0; }
+#lab-chat pre:has(> .language-sql) { background: var(--lab-code); color: var(--lab-ink); padding: 16px 30px 16px 16px; }
+#lab-chat pre:has(> .language-sql)::before { content: "Generated SQL"; display: block; padding-bottom: 10px; color: var(--lab-muted); font: 600 12px/1.2 "Segoe UI", sans-serif; }
+#lab-chat pre code { font-size: 15px; line-height: 1.55; }
+#lab-chat code.language-sql, #lab-chat .language-sql .token { background: transparent; color: var(--lab-ink); }
+#lab-chat .language-sql .token.keyword { color: var(--lab-keyword); }
+#lab-chat .language-sql .token.function { color: var(--lab-function); }
+#lab-input { border: 1px solid var(--lab-line); border-radius: 14px; background: var(--lab-panel); padding: 5px; }
+#lab-input textarea { background: var(--lab-panel); color: var(--lab-ink); }
+#lab-input textarea::placeholder { color: var(--lab-muted); opacity: 1; }
+#lab-input:focus-within { outline: 2px solid var(--lab-focus); outline-offset: 2px; }
+@media (max-width: 600px), (max-height: 600px) {
+  .lab-header { padding: 12px 0; }
   .lab-brand h1 { font-size: 20px; }
   .lab-model { flex-direction: column; align-items: flex-end; gap: 0; font-size: 11px; }
   .lab-model span + span { border: 0; padding: 0; }
-  #lab-workspace { margin-top: 16px; }
+  #lab-workspace { margin-top: 10px; }
 }
-#lab-chat pre:has(> .language-sql)::before {
-    content: "Generated SQL"; display: block; padding-bottom: 10px;
-    color: #496181; font: 600 12px/1.2 "Segoe UI", sans-serif;
+/* Keep the active stream from restoring a turn that was just cleared or retried. */
+#lab-workspace:has([data-testid="stop-button"]) #lab-chat button:where([aria-label="Clear"], [aria-label="Retry"], [aria-label="Undo"]) {
+  visibility: hidden;
 }
-#lab-chat pre:has(> .language-sql) { padding: 16px 30px 16px 16px; }
-#lab-chat pre code { font-size: 15px; line-height: 1.55; }
-.dark #lab-chat pre:has(> .language-sql)::before { color: #bfd1ea; }
-.gradio-container {
-    width: min(100vw, 1040px) !important;
-    min-width: 0 !important;
-    box-sizing: border-box !important;
-    padding-inline: clamp(10px, 2vw, 28px) !important;
-}
-.gradio-container .main, .gradio-container .contain { min-width: 0; box-sizing: border-box; }
