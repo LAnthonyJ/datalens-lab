@@ -243,16 +243,11 @@ def main(argv=None):
     print("Warm-up:", answer, flush=True)
     if args.check:
         return
-    import gradio as gr
-    def chat(message, history):
-        try:
-            yield from assistant.generate(message, history)
-        except (ValueError, RuntimeError) as exc:
-            raise gr.Error(str(exc)) from exc
-    ui = gr.ChatInterface(chat, title="DataLens Lab", description="An offline data analysis assistant.",
-                          examples=["Write a SQL query to count rows in sales.", "How should I handle missing values in a dataset?"],
-                          concurrency_limit=1, cache_examples=False, api_name="chat")
-    ui.queue(max_size=4).launch(server_name=args.server_name, server_port=args.port, share=False)
+    from demo_ui import CSS, appearance, build_ui
+    build_ui(assistant).queue(max_size=4).launch(
+        server_name=args.server_name, server_port=args.port, share=False,
+        theme=appearance(), css=CSS.read_text(encoding="utf-8"), footer_links=[],
+    )
 
 
 if __name__ == "__main__":

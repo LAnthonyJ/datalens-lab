@@ -8,11 +8,9 @@ Can a 0.8B-parameter model write a SQL query and recognize when a question is mi
 
 ## Inside the demo
 
-> Explain the difference between L1 and L2 regularization with examples.
+![Local Gradio conversation showing the generated SQLite query to count all rows in the sales table.](docs/media/gradio-session.png)
 
-![Recorded Gradio session showing a question about L1 and L2 regularization and the model’s answer.](docs/media/gradio-session.png)
-
-This session appears on page 9 of the [experiment report](12311701_张航源.pdf). To explore the behaviors measured below, try these two prompts:
+The model generated `SELECT COUNT(*) FROM sales;` in this session. The browser test copied the displayed query into SQLite and got **3** for a three-row fixture. Try the two English starters in the demo, or enter a question of your own.
 
 | Try asking | What to look for |
 | --- | --- |

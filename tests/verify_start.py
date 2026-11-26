@@ -26,7 +26,7 @@ def capture(self,args):
     old_init(self,args)
     instance.append(self)
 
-original_launch = gr.ChatInterface.launch
+original_launch = gr.Blocks.launch
 def verify(self,**kwargs):
     original_launch(self,**kwargs,prevent_thread_lock=True)
     c=Client(self.local_url,verbose=False)
@@ -54,5 +54,5 @@ def verify(self,**kwargs):
     finally:
         c.close()
         self.close()
-with patch.object(socket.socket,"connect",local_connect),patch.object(Assistant,"__init__",capture),patch.object(gr.ChatInterface,"launch",verify):
-    main([])
+with patch.object(socket.socket,"connect",local_connect),patch.object(Assistant,"__init__",capture),patch.object(gr.Blocks,"launch",verify):
+    main(sys.argv[1:])

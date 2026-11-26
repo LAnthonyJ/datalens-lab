@@ -1,0 +1,42 @@
+.gradio-container { max-width: 1040px !important; margin: auto; padding: 0 32px 28px !important; }
+body, .gradio-container { background: #f4f7fb; color: #172942; }
+.lab-header { display: flex; justify-content: space-between; align-items: center; padding: 28px 0 22px; border-bottom: 1px solid #c9d4e0; gap: 12px; }
+.lab-brand, .lab-model { display: flex; align-items: center; gap: 12px; }
+.lab-brand h1 { font: 650 25px/1.1 "Segoe UI", sans-serif; color: #172942; letter-spacing: -.045em; margin: 0; }
+.lab-mark { display: inline-block; width: 32px; height: 32px; background: radial-gradient(circle at 62% 38%, #fafcff 0 13%, #8db8ff 15% 27%, #2967ca 30% 46%, #183e76 49% 64%, #78a5e9 68% 76%, #264f89 82%); border-radius: 50%; }
+.lab-model { font: 12px/1.5 Consolas, monospace; color: #42566f; }
+.lab-model span + span { border-left: 1px solid #b7c3d3; padding-left: 12px; }
+#lab-workspace { margin: 24px auto 0; max-width: 900px; width: 100%; min-width: 0; gap: 12px; }
+#lab-heading h2 { font: 600 clamp(24px, 3vw, 34px)/1.2 "Segoe UI", sans-serif; letter-spacing: -.045em; color: #172942; margin: 0 0 5px; }
+#lab-chat { border: 1px solid #cbd7e4; border-radius: 16px; background: white; box-shadow: 0 6px 24px #21365409; }
+#lab-chat .lab-welcome { color: #243f65; font-size: clamp(20px, 3vw, 28px); letter-spacing: -.035em; }
+#lab-chat .message { overflow-wrap: anywhere; min-width: 0; max-width: 100%; }
+#lab-chat .user .message, #lab-chat .message.user { background: #e5efff; color: #183659; }
+#lab-chat pre { max-width: 100%; overflow-x: auto; white-space: pre; }
+#lab-input { border: 1px solid #aabbd0; border-radius: 14px; background: white; padding: 5px; }
+#lab-input:focus-within { outline: 2px solid #367ad3; outline-offset: 2px; }
+.dark .gradio-container, body.dark { background: #182536; color: #e6edf7; }
+.dark #lab-chat, .dark #lab-input { background: #202f42; border-color: #475e79; }
+.dark .lab-brand h1, .dark #lab-heading h2, .dark #lab-chat .lab-welcome, .dark .lab-model { color: #e6edf7; }
+@media (max-width: 600px) {
+  .gradio-container { padding: 0 12px 16px !important; }
+  .lab-header { padding: 16px 0; }
+  .lab-brand h1 { font-size: 20px; }
+  .lab-model { flex-direction: column; align-items: flex-end; gap: 0; font-size: 11px; }
+  .lab-model span + span { border: 0; padding: 0; }
+  #lab-workspace { margin-top: 16px; }
+}
+#lab-chat pre:has(> .language-sql)::before {
+    content: "Generated SQL"; display: block; padding-bottom: 10px;
+    color: #496181; font: 600 12px/1.2 "Segoe UI", sans-serif;
+}
+#lab-chat pre:has(> .language-sql) { padding: 16px 30px 16px 16px; }
+#lab-chat pre code { font-size: 15px; line-height: 1.55; }
+.dark #lab-chat pre:has(> .language-sql)::before { color: #bfd1ea; }
+.gradio-container {
+    width: min(100vw, 1040px) !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    padding-inline: clamp(10px, 2vw, 28px) !important;
+}
+.gradio-container .main, .gradio-container .contain { min-width: 0; box-sizing: border-box; }

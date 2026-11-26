@@ -61,7 +61,7 @@ def main():
             retry.click()
             page.wait_for_function("() => /select\\s+count\\s*\\(/i.test(document.body.innerText)", timeout=120000)
             retry.wait_for(timeout=120000)
-            page.get_by_role("button", name=re.compile("Clear conversation|Clear chat|清空对话", re.I)).click()
+            page.get_by_role("button", name=re.compile("^Clear$|Clear conversation|Clear chat|清空对话|^清除$", re.I)).click()
             retry.wait_for(state="hidden")
             browser.close()
 
