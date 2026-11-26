@@ -1,0 +1,71 @@
+{
+  "items": 480,
+  "clusters": 80,
+  "base": 29,
+  "lora": 88,
+  "delta_pp": 12.291666666666664,
+  "ci97_5_pp": [
+    8.75,
+    16.041666666666664
+  ],
+  "improved": 77,
+  "regressed": 18,
+  "meets_threshold": true,
+  "cluster_sd": 0.14462656213637512,
+  "generation": {
+    "base": {
+      "length": 480
+    },
+    "lora": {
+      "ok": 479,
+      "length": 1
+    }
+  },
+  "first_gain": "db-aircraft-2",
+  "regression_ids": [
+    "db-cinema-2",
+    "db-college_1-2",
+    "db-college_2-2",
+    "db-college_2-4",
+    "db-cre_Drama_Workshop_Groups-4",
+    "db-csu_1-4",
+    "db-customers_and_products_contacts-4",
+    "db-department_store-4",
+    "db-insurance_and_eClaims-4",
+    "db-insurance_fnol-4",
+    "db-local_govt_and_lot-2",
+    "db-network_2-1",
+    "db-news_report-4",
+    "db-pilot_record-4",
+    "db-program_share-4",
+    "db-railway-4",
+    "db-school_player-4",
+    "db-twitter_1-4"
+  ],
+  "categories": {
+    "aggregate": {
+      "base": 0,
+      "lora": 4
+    },
+    "date": {
+      "base": 0,
+      "lora": 27
+    },
+    "distinct": {
+      "base": 6,
+      "lora": 7
+    },
+    "filter": {
+      "base": 8,
+      "lora": 44
+    },
+    "join": {
+      "base": 15,
+      "lora": 6
+    },
+    "zero": {
+      "base": 0,
+      "lora": 0
+    }
+  }
+}

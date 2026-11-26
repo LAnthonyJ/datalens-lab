@@ -1,0 +1,1941 @@
+{
+  "models": {
+    "base": {
+      "executable": 71,
+      "correct": 29
+    },
+    "lora": {
+      "executable": 209,
+      "correct": 88
+    }
+  },
+  "same_questions_both_executable": {
+    "items": 45,
+    "base": 19,
+    "lora": 23,
+    "improved": 12,
+    "regressed": 8
+  },
+  "by_question": {
+    "db-csu_1-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-csu_1-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-csu_1-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-csu_1-4": {
+      "base": true,
+      "lora": false
+    },
+    "db-csu_1-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-csu_1-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-customer_complaints-1": {
+      "base": true,
+      "lora": true
+    },
+    "db-customer_complaints-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-customer_complaints-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-customer_complaints-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-customer_complaints-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-customer_complaints-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-flight_company-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-flight_company-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-flight_company-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-flight_company-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-flight_company-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-flight_company-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-farm-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-farm-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-farm-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-farm-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-farm-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-farm-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-manufacturer-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-manufacturer-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-manufacturer-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-manufacturer-4": {
+      "base": false,
+      "lora": true
+    },
+    "db-manufacturer-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-manufacturer-6": {
+      "base": false,
+      "lora": true
+    },
+    "db-party_host-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-party_host-2": {
+      "base": false,
+      "lora": true
+    },
+    "db-party_host-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-party_host-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-party_host-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-party_host-6": {
+      "base": false,
+      "lora": true
+    },
+    "db-cre_Drama_Workshop_Groups-1": {
+      "base": false,
+      "lora": false
+    },
+    "db-cre_Drama_Workshop_Groups-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-cre_Drama_Workshop_Groups-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-cre_Drama_Workshop_Groups-4": {
+      "base": true,
+      "lora": true
+    },
+    "db-cre_Drama_Workshop_Groups-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-cre_Drama_Workshop_Groups-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-insurance_fnol-1": {
+      "base": true,
+      "lora": false
+    },
+    "db-insurance_fnol-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-insurance_fnol-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-insurance_fnol-4": {
+      "base": true,
+      "lora": true
+    },
+    "db-insurance_fnol-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-insurance_fnol-6": {
+      "base": false,
+      "lora": true
+    },
+    "db-theme_gallery-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-theme_gallery-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-theme_gallery-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-theme_gallery-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-theme_gallery-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-theme_gallery-6": {
+      "base": true,
+      "lora": false
+    },
+    "db-phone_1-1": {
+      "base": false,
+      "lora": false
+    },
+    "db-phone_1-2": {
+      "base": false,
+      "lora": true
+    },
+    "db-phone_1-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-phone_1-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-phone_1-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-phone_1-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-products_for_hire-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-products_for_hire-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-products_for_hire-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-products_for_hire-4": {
+      "base": false,
+      "lora": true
+    },
+    "db-products_for_hire-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-products_for_hire-6": {
+      "base": false,
+      "lora": true
+    },
+    "db-ship_1-1": {
+      "base": false,
+      "lora": false
+    },
+    "db-ship_1-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-ship_1-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-ship_1-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-ship_1-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-ship_1-6": {
+      "base": false,
+      "lora": true
+    },
+    "db-election-1": {
+      "base": false,
+      "lora": false
+    },
+    "db-election-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-election-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-election-4": {
+      "base": true,
+      "lora": false
+    },
+    "db-election-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-election-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-college_2-1": {
+      "base": true,
+      "lora": true
+    },
+    "db-college_2-2": {
+      "base": true,
+      "lora": false
+    },
+    "db-college_2-3": {
+      "base": true,
+      "lora": true
+    },
+    "db-college_2-4": {
+      "base": true,
+      "lora": true
+    },
+    "db-college_2-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-college_2-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-cre_Doc_Control_Systems-1": {
+      "base": true,
+      "lora": true
+    },
+    "db-cre_Doc_Control_Systems-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-cre_Doc_Control_Systems-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-cre_Doc_Control_Systems-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-cre_Doc_Control_Systems-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-cre_Doc_Control_Systems-6": {
+      "base": false,
+      "lora": true
+    },
+    "db-store_1-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-store_1-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-store_1-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-store_1-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-store_1-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-store_1-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-journal_committee-1": {
+      "base": true,
+      "lora": true
+    },
+    "db-journal_committee-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-journal_committee-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-journal_committee-4": {
+      "base": true,
+      "lora": false
+    },
+    "db-journal_committee-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-journal_committee-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-book_2-1": {
+      "base": true,
+      "lora": true
+    },
+    "db-book_2-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-book_2-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-book_2-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-book_2-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-book_2-6": {
+      "base": true,
+      "lora": true
+    },
+    "db-news_report-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-news_report-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-news_report-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-news_report-4": {
+      "base": true,
+      "lora": true
+    },
+    "db-news_report-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-news_report-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-browser_web-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-browser_web-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-browser_web-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-browser_web-4": {
+      "base": false,
+      "lora": true
+    },
+    "db-browser_web-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-browser_web-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-customers_card_transactions-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-customers_card_transactions-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-customers_card_transactions-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-customers_card_transactions-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-customers_card_transactions-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-customers_card_transactions-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-aircraft-1": {
+      "base": false,
+      "lora": false
+    },
+    "db-aircraft-2": {
+      "base": false,
+      "lora": true
+    },
+    "db-aircraft-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-aircraft-4": {
+      "base": true,
+      "lora": true
+    },
+    "db-aircraft-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-aircraft-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-culture_company-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-culture_company-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-culture_company-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-culture_company-4": {
+      "base": false,
+      "lora": true
+    },
+    "db-culture_company-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-culture_company-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-network_2-1": {
+      "base": true,
+      "lora": true
+    },
+    "db-network_2-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-network_2-3": {
+      "base": true,
+      "lora": true
+    },
+    "db-network_2-4": {
+      "base": true,
+      "lora": false
+    },
+    "db-network_2-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-network_2-6": {
+      "base": true,
+      "lora": false
+    },
+    "db-hr_1-1": {
+      "base": true,
+      "lora": true
+    },
+    "db-hr_1-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-hr_1-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-hr_1-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-hr_1-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-hr_1-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-apartment_rentals-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-apartment_rentals-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-apartment_rentals-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-apartment_rentals-4": {
+      "base": true,
+      "lora": false
+    },
+    "db-apartment_rentals-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-apartment_rentals-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-music_2-1": {
+      "base": false,
+      "lora": false
+    },
+    "db-music_2-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-music_2-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-music_2-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-music_2-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-music_2-6": {
+      "base": true,
+      "lora": false
+    },
+    "db-assets_maintenance-1": {
+      "base": false,
+      "lora": false
+    },
+    "db-assets_maintenance-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-assets_maintenance-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-assets_maintenance-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-assets_maintenance-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-assets_maintenance-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-formula_1-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-formula_1-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-formula_1-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-formula_1-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-formula_1-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-formula_1-6": {
+      "base": false,
+      "lora": true
+    },
+    "db-college_1-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-college_1-2": {
+      "base": true,
+      "lora": false
+    },
+    "db-college_1-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-college_1-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-college_1-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-college_1-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-twitter_1-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-twitter_1-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-twitter_1-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-twitter_1-4": {
+      "base": true,
+      "lora": false
+    },
+    "db-twitter_1-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-twitter_1-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-customers_and_products_contacts-1": {
+      "base": true,
+      "lora": false
+    },
+    "db-customers_and_products_contacts-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-customers_and_products_contacts-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-customers_and_products_contacts-4": {
+      "base": true,
+      "lora": false
+    },
+    "db-customers_and_products_contacts-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-customers_and_products_contacts-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-workshop_paper-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-workshop_paper-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-workshop_paper-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-workshop_paper-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-workshop_paper-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-workshop_paper-6": {
+      "base": true,
+      "lora": true
+    },
+    "db-wedding-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-wedding-2": {
+      "base": true,
+      "lora": true
+    },
+    "db-wedding-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-wedding-4": {
+      "base": false,
+      "lora": true
+    },
+    "db-wedding-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-wedding-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-department_store-1": {
+      "base": true,
+      "lora": true
+    },
+    "db-department_store-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-department_store-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-department_store-4": {
+      "base": true,
+      "lora": true
+    },
+    "db-department_store-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-department_store-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-tracking_software_problems-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-tracking_software_problems-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-tracking_software_problems-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-tracking_software_problems-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-tracking_software_problems-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-tracking_software_problems-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-pilot_record-1": {
+      "base": true,
+      "lora": true
+    },
+    "db-pilot_record-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-pilot_record-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-pilot_record-4": {
+      "base": true,
+      "lora": false
+    },
+    "db-pilot_record-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-pilot_record-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-gas_company-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-gas_company-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-gas_company-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-gas_company-4": {
+      "base": true,
+      "lora": true
+    },
+    "db-gas_company-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-gas_company-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-city_record-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-city_record-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-city_record-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-city_record-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-city_record-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-city_record-6": {
+      "base": false,
+      "lora": true
+    },
+    "db-flight_1-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-flight_1-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-flight_1-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-flight_1-4": {
+      "base": false,
+      "lora": true
+    },
+    "db-flight_1-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-flight_1-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-program_share-1": {
+      "base": true,
+      "lora": true
+    },
+    "db-program_share-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-program_share-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-program_share-4": {
+      "base": true,
+      "lora": false
+    },
+    "db-program_share-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-program_share-6": {
+      "base": true,
+      "lora": true
+    },
+    "db-voter_2-1": {
+      "base": true,
+      "lora": true
+    },
+    "db-voter_2-2": {
+      "base": true,
+      "lora": true
+    },
+    "db-voter_2-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-voter_2-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-voter_2-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-voter_2-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-railway-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-railway-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-railway-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-railway-4": {
+      "base": true,
+      "lora": true
+    },
+    "db-railway-5": {
+      "base": true,
+      "lora": false
+    },
+    "db-railway-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-candidate_poll-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-candidate_poll-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-candidate_poll-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-candidate_poll-4": {
+      "base": true,
+      "lora": true
+    },
+    "db-candidate_poll-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-candidate_poll-6": {
+      "base": true,
+      "lora": true
+    },
+    "db-entertainment_awards-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-entertainment_awards-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-entertainment_awards-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-entertainment_awards-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-entertainment_awards-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-entertainment_awards-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-movie_1-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-movie_1-2": {
+      "base": false,
+      "lora": true
+    },
+    "db-movie_1-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-movie_1-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-movie_1-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-movie_1-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-school_player-1": {
+      "base": true,
+      "lora": false
+    },
+    "db-school_player-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-school_player-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-school_player-4": {
+      "base": true,
+      "lora": true
+    },
+    "db-school_player-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-school_player-6": {
+      "base": true,
+      "lora": true
+    },
+    "db-insurance_policies-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-insurance_policies-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-insurance_policies-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-insurance_policies-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-insurance_policies-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-insurance_policies-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-insurance_and_eClaims-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-insurance_and_eClaims-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-insurance_and_eClaims-3": {
+      "base": true,
+      "lora": true
+    },
+    "db-insurance_and_eClaims-4": {
+      "base": true,
+      "lora": false
+    },
+    "db-insurance_and_eClaims-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-insurance_and_eClaims-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-cre_Doc_Tracking_DB-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-cre_Doc_Tracking_DB-2": {
+      "base": false,
+      "lora": true
+    },
+    "db-cre_Doc_Tracking_DB-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-cre_Doc_Tracking_DB-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-cre_Doc_Tracking_DB-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-cre_Doc_Tracking_DB-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-election_representative-1": {
+      "base": true,
+      "lora": true
+    },
+    "db-election_representative-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-election_representative-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-election_representative-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-election_representative-5": {
+      "base": true,
+      "lora": true
+    },
+    "db-election_representative-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-performance_attendance-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-performance_attendance-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-performance_attendance-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-performance_attendance-4": {
+      "base": false,
+      "lora": true
+    },
+    "db-performance_attendance-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-performance_attendance-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-machine_repair-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-machine_repair-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-machine_repair-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-machine_repair-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-machine_repair-5": {
+      "base": true,
+      "lora": true
+    },
+    "db-machine_repair-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-local_govt_and_lot-1": {
+      "base": true,
+      "lora": true
+    },
+    "db-local_govt_and_lot-2": {
+      "base": true,
+      "lora": false
+    },
+    "db-local_govt_and_lot-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-local_govt_and_lot-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-local_govt_and_lot-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-local_govt_and_lot-6": {
+      "base": false,
+      "lora": true
+    },
+    "db-music_1-1": {
+      "base": false,
+      "lora": false
+    },
+    "db-music_1-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-music_1-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-music_1-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-music_1-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-music_1-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-company_office-1": {
+      "base": true,
+      "lora": false
+    },
+    "db-company_office-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-company_office-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-company_office-4": {
+      "base": false,
+      "lora": true
+    },
+    "db-company_office-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-company_office-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-product_catalog-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-product_catalog-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-product_catalog-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-product_catalog-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-product_catalog-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-product_catalog-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-cinema-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-cinema-2": {
+      "base": true,
+      "lora": false
+    },
+    "db-cinema-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-cinema-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-cinema-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-cinema-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-chinook_1-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-chinook_1-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-chinook_1-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-chinook_1-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-chinook_1-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-chinook_1-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-coffee_shop-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-coffee_shop-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-coffee_shop-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-coffee_shop-4": {
+      "base": true,
+      "lora": false
+    },
+    "db-coffee_shop-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-coffee_shop-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-driving_school-1": {
+      "base": false,
+      "lora": false
+    },
+    "db-driving_school-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-driving_school-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-driving_school-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-driving_school-5": {
+      "base": true,
+      "lora": true
+    },
+    "db-driving_school-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-behavior_monitoring-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-behavior_monitoring-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-behavior_monitoring-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-behavior_monitoring-4": {
+      "base": false,
+      "lora": true
+    },
+    "db-behavior_monitoring-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-behavior_monitoring-6": {
+      "base": false,
+      "lora": true
+    },
+    "db-architecture-1": {
+      "base": true,
+      "lora": true
+    },
+    "db-architecture-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-architecture-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-architecture-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-architecture-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-architecture-6": {
+      "base": true,
+      "lora": false
+    },
+    "db-e_learning-1": {
+      "base": false,
+      "lora": false
+    },
+    "db-e_learning-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-e_learning-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-e_learning-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-e_learning-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-e_learning-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-device-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-device-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-device-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-device-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-device-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-device-6": {
+      "base": false,
+      "lora": true
+    },
+    "db-entrepreneur-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-entrepreneur-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-entrepreneur-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-entrepreneur-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-entrepreneur-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-entrepreneur-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-sakila_1-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-sakila_1-2": {
+      "base": false,
+      "lora": true
+    },
+    "db-sakila_1-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-sakila_1-4": {
+      "base": true,
+      "lora": true
+    },
+    "db-sakila_1-5": {
+      "base": true,
+      "lora": true
+    },
+    "db-sakila_1-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-shop_membership-1": {
+      "base": false,
+      "lora": false
+    },
+    "db-shop_membership-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-shop_membership-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-shop_membership-4": {
+      "base": true,
+      "lora": true
+    },
+    "db-shop_membership-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-shop_membership-6": {
+      "base": true,
+      "lora": true
+    },
+    "db-swimming-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-swimming-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-swimming-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-swimming-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-swimming-5": {
+      "base": true,
+      "lora": true
+    },
+    "db-swimming-6": {
+      "base": true,
+      "lora": true
+    },
+    "db-body_builder-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-body_builder-2": {
+      "base": false,
+      "lora": true
+    },
+    "db-body_builder-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-body_builder-4": {
+      "base": false,
+      "lora": true
+    },
+    "db-body_builder-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-body_builder-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-customers_and_invoices-1": {
+      "base": true,
+      "lora": true
+    },
+    "db-customers_and_invoices-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-customers_and_invoices-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-customers_and_invoices-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-customers_and_invoices-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-customers_and_invoices-6": {
+      "base": false,
+      "lora": true
+    },
+    "db-tracking_orders-1": {
+      "base": true,
+      "lora": true
+    },
+    "db-tracking_orders-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-tracking_orders-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-tracking_orders-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-tracking_orders-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-tracking_orders-6": {
+      "base": false,
+      "lora": true
+    },
+    "db-e_government-1": {
+      "base": false,
+      "lora": false
+    },
+    "db-e_government-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-e_government-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-e_government-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-e_government-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-e_government-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-bike_1-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-bike_1-2": {
+      "base": false,
+      "lora": true
+    },
+    "db-bike_1-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-bike_1-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-bike_1-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-bike_1-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-customers_and_addresses-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-customers_and_addresses-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-customers_and_addresses-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-customers_and_addresses-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-customers_and_addresses-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-customers_and_addresses-6": {
+      "base": false,
+      "lora": true
+    },
+    "db-tracking_grants_for_research-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-tracking_grants_for_research-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-tracking_grants_for_research-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-tracking_grants_for_research-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-tracking_grants_for_research-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-tracking_grants_for_research-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-game_injury-1": {
+      "base": true,
+      "lora": false
+    },
+    "db-game_injury-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-game_injury-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-game_injury-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-game_injury-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-game_injury-6": {
+      "base": false,
+      "lora": true
+    },
+    "db-cre_Theme_park-1": {
+      "base": false,
+      "lora": false
+    },
+    "db-cre_Theme_park-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-cre_Theme_park-3": {
+      "base": false,
+      "lora": false
+    },
+    "db-cre_Theme_park-4": {
+      "base": false,
+      "lora": false
+    },
+    "db-cre_Theme_park-5": {
+      "base": false,
+      "lora": false
+    },
+    "db-cre_Theme_park-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-film_rank-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-film_rank-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-film_rank-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-film_rank-4": {
+      "base": false,
+      "lora": true
+    },
+    "db-film_rank-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-film_rank-6": {
+      "base": false,
+      "lora": false
+    },
+    "db-cre_Docs_and_Epenses-1": {
+      "base": false,
+      "lora": true
+    },
+    "db-cre_Docs_and_Epenses-2": {
+      "base": false,
+      "lora": false
+    },
+    "db-cre_Docs_and_Epenses-3": {
+      "base": false,
+      "lora": true
+    },
+    "db-cre_Docs_and_Epenses-4": {
+      "base": true,
+      "lora": false
+    },
+    "db-cre_Docs_and_Epenses-5": {
+      "base": false,
+      "lora": true
+    },
+    "db-cre_Docs_and_Epenses-6": {
+      "base": false,
+      "lora": true
+    }
+  }
+}

@@ -8,11 +8,11 @@ Can a 0.8B-parameter model write a SQL query and recognize when a question is mi
 
 ## Checkpoint comparison
 
-Under the demo's 128-token response budget, the original Qwen3.5-0.8B passed **53 of 1,034** Spider development questions. The fixed-learning-rate LoRA candidate passed **208 of 1,034**. Each query had to return the reference result across the official test databases. LoRA repaired 180 baseline failures and introduced 25 regressions. The paired gain was **15.0 percentage points** (97.5% database-bootstrap interval, +10.7 to +20.0).
+On **480 business SQL questions across 80 schemas**, the raw Qwen3.5-0.8B returned the right result on all three database fixtures for **29 questions (6.0%)**. The final LoRA candidate passed **88 (18.3%)**. The paired gain was **12.3 percentage points** (97.5% interval, +8.8 to +16.0). The improvement met the registered ten-point threshold. [Paired query results](evaluation/domain/results/confirm-b-grades.csv)
 
-The baseline hit the response limit on 1,031 answers. LoRA hit it on zero. This comparison measures the ability to deliver correct SQL within the demo budget. The complete [paired answers](evaluation/domain/results/spider-answers.jsonl) and [scores](evaluation/domain/results/spider-grades.csv) include both successes and failures.
+The clearest gains were in filters (8 → 44 passes out of 80) and date boundaries (0 → 27). Joins fell from 15 to 6, and neither checkpoint solved the zero-record counting tasks. Under the shared 128-token budget, raw Qwen returned executable SQL on 71 questions and LoRA on 209. Where both queries executed, raw Qwen answered 19 of 45 correctly and LoRA answered 23. [Execution diagnostic](evaluation/domain/results/sql-execution-diagnostic.json)
 
-The registered business comparison covers 400 paired financial-report scenarios. The custom SQL comparison covers 480 questions on 80 schemas. Their [protocol and reproduction guide](evaluation/domain/README.md) fixes the passing criteria and explains how the cases were screened.
+On the separate **Spider development benchmark**, raw Qwen passed **53/1,034** and LoRA **208/1,034**. The baseline reached the response limit on 1,031 questions; the candidate reached it on zero. The business-decision endpoint uses 400 separate pairs and independent masked AI review. [Spider answers](evaluation/domain/results/spider-answers.jsonl) · [Protocol and reproduction guide](evaluation/domain/README.md) · [Checkpoint provenance](evaluation/domain/CHECKPOINTS.md)
 
 <details>
 <summary>Historical regression check · 20 missing-data questions</summary>
