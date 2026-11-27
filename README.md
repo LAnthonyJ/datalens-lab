@@ -1,4 +1,4 @@
-# DataLens Lab
+# DataLens Text-to-SQL
 
 [![DataLens Lab cover: a glass lens brings scattered data points into focus.](docs/media/datalens-lens.png)](#inside-the-demo)
 
